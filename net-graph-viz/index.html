@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>NET GRAPH — Server Topology</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;500;700&display=swap");
+
+            :root {
+                --bg: #070b12;
+                --bg2: #0d1420;
+                --grid: #0f1e30;
+                --internal: #00e5ff;
+                --external: #ff4560;
+                --edge-int: #00e5ff44;
+                --edge-ext: #ff456044;
+                --edge-hot: #ffffff99;
+                --text: #c8d8e8;
+                --accent: #00e5ff;
+                --danger: #ff4560;
+                --dim: #3a5068;
+                --panel: #0a1522ee;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: "Share Tech Mono", monospace;
+                height: 100vh;
+                overflow: hidden;
+                display: grid;
+                grid-template-rows: 48px 1fr;
+                grid-template-columns: 1fr 300px;
+            }
+
+            /* ── HEADER ── */
+            header {
+                grid-column: 1 / -1;
+                background: var(--bg2);
+                border-bottom: 1px solid #0f2a40;
+                display: flex;
+                align-items: center;
+                padding: 0 20px;
+                gap: 20px;
+            }
+            header .logo {
+                font-family: "Rajdhani", sans-serif;
+                font-weight: 700;
+                font-size: 18px;
+                letter-spacing: 4px;
+                color: var(--accent);
+                text-transform: uppercase;
+            }
+            header .logo span {
+                color: var(--text);
+                font-weight: 300;
+            }
+            header .stats {
+                display: flex;
+                gap: 24px;
+                margin-left: auto;
+                font-size: 11px;
+                color: var(--dim);
+            }
+            header .stats b {
+                color: var(--accent);
+            }
+            header .stats .ext {
+                color: var(--danger);
+            }
+
+            /* ── CANVAS ── */
+            #canvas {
+                position: relative;
+                overflow: hidden;
+                background:
+                    linear-gradient(var(--grid) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+                background-size: 40px 40px;
+                background-color: var(--bg);
+            }
+
+            /* vignette overlay */
+            #canvas::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: radial-gradient(
+                    ellipse at center,
+                    transparent 40%,
+                    var(--bg) 100%
+                );
+                pointer-events: none;
+            }
+
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+
+            /* ── EDGES ── */
+            .link {
+                stroke-width: 1.5;
+                fill: none;
+            }
+            .link.internal {
+                stroke: var(--edge-int);
+            }
+            .link.external {
+                stroke: var(--edge-ext);
+                stroke-dasharray: 6 3;
+            }
+            .link.highlighted {
+                stroke: var(--edge-hot) !important;
+                stroke-width: 2.5 !important;
+            }
+
+            /* ── NODES ── */
+            .node-group {
+                cursor: pointer;
+            }
+
+            .node-ring {
+                fill: none;
+                stroke-width: 1;
+                opacity: 0.4;
+            }
+            .node-ring.internal {
+                stroke: var(--internal);
+            }
+            .node-ring.external {
+                stroke: var(--external);
+            }
+
+            .node-core {
+                stroke-width: 1.5;
+            }
+            .node-core.internal {
+                fill: #001f2e;
+                stroke: var(--internal);
+            }
+            .node-core.external {
+                fill: #200010;
+                stroke: var(--external);
+            }
+
+            .node-label {
+                font-family: "Share Tech Mono", monospace;
+                font-size: 11px;
+                fill: var(--text);
+                pointer-events: none;
+                text-anchor: middle;
+                dominant-baseline: middle;
+            }
+            .node-label.external {
+                fill: var(--danger);
+                opacity: 0.7;
+            }
+
+            /* pulse animation */
+            @keyframes pulse {
+                0% {
+                    r: 14;
+                    opacity: 0.4;
+                }
+                50% {
+                    r: 22;
+                    opacity: 0.1;
+                }
+                100% {
+                    r: 14;
+                    opacity: 0.4;
+                }
+            }
+            .node-ring.pulsing {
+                animation: pulse 2s ease-in-out infinite;
+            }
+
+            /* ── SIDE PANEL ── */
+            #panel {
+                background: var(--panel);
+                border-left: 1px solid #0f2a40;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            #panel-header {
+                padding: 14px 16px 10px;
+                border-bottom: 1px solid #0f2a40;
+                font-family: "Rajdhani", sans-serif;
+                font-weight: 700;
+                font-size: 13px;
+                letter-spacing: 2px;
+                color: var(--dim);
+                text-transform: uppercase;
+            }
+
+            #panel-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 14px 16px;
+                scrollbar-width: thin;
+                scrollbar-color: #1a3a50 transparent;
+            }
+
+            .panel-empty {
+                color: var(--dim);
+                font-size: 12px;
+                line-height: 1.8;
+                padding-top: 8px;
+            }
+
+            .info-block {
+                margin-bottom: 18px;
+            }
+            .info-label {
+                font-size: 10px;
+                color: var(--dim);
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                margin-bottom: 4px;
+            }
+            .info-value {
+                font-size: 13px;
+                color: var(--accent);
+                word-break: break-all;
+            }
+            .info-value.danger {
+                color: var(--danger);
+            }
+            .info-value.normal {
+                color: var(--text);
+            }
+
+            .tag {
+                display: inline-block;
+                background: #0d2035;
+                border: 1px solid #1a3a50;
+                border-radius: 2px;
+                padding: 2px 6px;
+                font-size: 11px;
+                margin: 2px;
+                color: var(--text);
+            }
+            .tag.port {
+                color: #7ec8e3;
+                border-color: #1a4a60;
+            }
+            .tag.ext {
+                color: var(--danger);
+                border-color: #3a1020;
+            }
+
+            .conn-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 0;
+                border-bottom: 1px solid #0f2a40;
+                font-size: 12px;
+            }
+            .conn-row:last-child {
+                border-bottom: none;
+            }
+            .conn-target {
+                color: var(--text);
+            }
+            .conn-target.ext {
+                color: var(--danger);
+            }
+            .conn-count {
+                font-size: 10px;
+                color: var(--dim);
+                background: #0d2035;
+                padding: 1px 6px;
+                border-radius: 2px;
+            }
+
+            /* ── LEGEND ── */
+            #legend {
+                padding: 12px 16px;
+                border-top: 1px solid #0f2a40;
+                font-size: 11px;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--dim);
+            }
+            .legend-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                border: 1.5px solid;
+                flex-shrink: 0;
+            }
+            .legend-dot.int {
+                border-color: var(--internal);
+                background: #001f2e;
+            }
+            .legend-dot.ext {
+                border-color: var(--external);
+                background: #200010;
+            }
+            .legend-line {
+                width: 20px;
+                height: 2px;
+                flex-shrink: 0;
+            }
+            .legend-line.int {
+                background: var(--edge-int);
+            }
+            .legend-line.ext {
+                background: repeating-linear-gradient(
+                    90deg,
+                    var(--edge-ext) 0px,
+                    var(--edge-ext) 4px,
+                    transparent 4px,
+                    transparent 8px
+                );
+            }
+
+            /* ── CONTROLS ── */
+            #controls {
+                position: absolute;
+                bottom: 16px;
+                left: 16px;
+                display: flex;
+                gap: 8px;
+                z-index: 10;
+            }
+            .ctrl-btn {
+                background: var(--panel);
+                border: 1px solid #1a3a50;
+                color: var(--dim);
+                font-family: "Share Tech Mono", monospace;
+                font-size: 11px;
+                padding: 6px 12px;
+                cursor: pointer;
+                letter-spacing: 1px;
+                transition: all 0.2s;
+            }
+            .ctrl-btn:hover {
+                color: var(--accent);
+                border-color: var(--accent);
+            }
+
+            /* ── LOAD OVERLAY ── */
+            #load-overlay {
+                position: fixed;
+                inset: 0;
+                background: var(--bg);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                z-index: 100;
+            }
+            #load-overlay .lo-title {
+                font-family: "Rajdhani", sans-serif;
+                font-weight: 700;
+                font-size: 22px;
+                letter-spacing: 6px;
+                color: var(--accent);
+            }
+            #load-overlay .lo-sub {
+                font-size: 12px;
+                color: var(--dim);
+                text-align: center;
+                line-height: 1.8;
+                max-width: 380px;
+            }
+            #load-overlay label {
+                background: #0d1e30;
+                border: 1px dashed #1a4a60;
+                padding: 14px 28px;
+                cursor: pointer;
+                color: var(--accent);
+                font-size: 13px;
+                letter-spacing: 2px;
+                transition: all 0.2s;
+            }
+            #load-overlay label:hover {
+                background: #112030;
+                border-color: var(--accent);
+            }
+            #file-input {
+                display: none;
+            }
+            #load-overlay .lo-hint {
+                font-size: 11px;
+                color: var(--dim);
+            }
+        </style>
+    </head>
+    <body>
+        <!-- LOAD OVERLAY -->
+        <div id="load-overlay">
+            <div class="lo-title">NET — GRAPH</div>
+            <div class="lo-sub">
+                Visualizador de topología de red entre servidores.<br />
+                Carga el archivo <code>graph.json</code> generado por el
+                builder.
+            </div>
+            <label for="file-input">⬆ CARGAR graph.json</label>
+            <input type="file" id="file-input" accept=".json" />
+            <div class="lo-hint">O arrastra el archivo aquí</div>
+        </div>
+
+        <!-- MAIN UI -->
+        <header>
+            <div class="logo">NET<span>—</span>GRAPH</div>
+            <div class="stats">
+                <div>NODOS <b id="stat-nodes">0</b></div>
+                <div>INTERNOS <b id="stat-int">0</b></div>
+                <div>EXTERNOS <b class="ext" id="stat-ext">0</b></div>
+                <div>ARISTAS <b id="stat-edges">0</b></div>
+            </div>
+        </header>
+
+        <div id="canvas">
+            <svg id="svg"></svg>
+            <div id="controls">
+                <button class="ctrl-btn" onclick="resetZoom()">⊡ RESET</button>
+                <button class="ctrl-btn" onclick="toggleExternal()">
+                    ⊘ EXTERNOS
+                </button>
+                <button class="ctrl-btn" onclick="reheat()">
+                    ⟳ REORGANIZAR
+                </button>
+            </div>
+        </div>
+
+        <div id="panel">
+            <div id="panel-header">INSPECTOR</div>
+            <div id="panel-content">
+                <div class="panel-empty">
+                    Haz click en un nodo<br />para ver sus detalles<br />y
+                    conexiones.
+                </div>
+            </div>
+            <div id="legend">
+                <div class="legend-item">
+                    <div class="legend-dot int"></div>
+                    Servidor interno
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot ext"></div>
+                    Host externo
+                </div>
+                <div class="legend-item">
+                    <div class="legend-line int"></div>
+                    Conexión interna
+                </div>
+                <div class="legend-item">
+                    <div class="legend-line ext"></div>
+                    Conexión externa
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ── State ────────────────────────────────────────────────────────────────────
+            let graphData = null;
+            let simulation = null;
+            let showExternal = true;
+            let selectedNode = null;
+
+            // ── File Loading ─────────────────────────────────────────────────────────────
+            const overlay = document.getElementById("load-overlay");
+            const fileInput = document.getElementById("file-input");
+
+            fileInput.addEventListener("change", (e) =>
+                loadFile(e.target.files[0]),
+            );
+
+            document.addEventListener("dragover", (e) => e.preventDefault());
+            document.addEventListener("drop", (e) => {
+                e.preventDefault();
+                const f = e.dataTransfer.files[0];
+                if (f) loadFile(f);
+            });
+
+            function loadFile(file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        graphData = JSON.parse(ev.target.result);
+                        overlay.style.display = "none";
+                        renderGraph(graphData);
+                    } catch (err) {
+                        alert("Error parseando graph.json: " + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            // ── Render ───────────────────────────────────────────────────────────────────
+            function renderGraph(data) {
+                const svg = d3.select("#svg");
+                svg.selectAll("*").remove();
+
+                const W = document.getElementById("canvas").clientWidth;
+                const H = document.getElementById("canvas").clientHeight;
+
+                // stats header
+                document.getElementById("stat-nodes").textContent =
+                    data.nodes.length;
+                document.getElementById("stat-int").textContent =
+                    data.nodes.filter((n) => !n.is_external).length;
+                document.getElementById("stat-ext").textContent =
+                    data.nodes.filter((n) => n.is_external).length;
+                document.getElementById("stat-edges").textContent =
+                    data.edges.length;
+
+                // zoom
+                const zoom = d3
+                    .zoom()
+                    .scaleExtent([0.1, 4])
+                    .on("zoom", (e) => g.attr("transform", e.transform));
+                svg.call(zoom);
+                window._zoom = zoom;
+                window._svg = svg;
+
+                const g = svg.append("g").attr("id", "root");
+
+                // arrow markers
+                const defs = svg.append("defs");
+                ["internal", "external"].forEach((type) => {
+                    defs.append("marker")
+                        .attr("id", `arrow-${type}`)
+                        .attr("viewBox", "0 -4 8 8")
+                        .attr("refX", 20)
+                        .attr("refY", 0)
+                        .attr("markerWidth", 6)
+                        .attr("markerHeight", 6)
+                        .attr("orient", "auto")
+                        .append("path")
+                        .attr("d", "M0,-4L8,0L0,4")
+                        .attr(
+                            "fill",
+                            type === "internal" ? "#00e5ff55" : "#ff456055",
+                        );
+                });
+
+                // prepare nodes & links (filtered)
+                const nodes = data.nodes.filter(
+                    (n) => showExternal || !n.is_external,
+                );
+                const nodeIds = new Set(nodes.map((n) => n.id));
+                const links = data.edges.filter(
+                    (e) => nodeIds.has(e.source) && nodeIds.has(e.target),
+                );
+
+                // link elements
+                const link = g
+                    .append("g")
+                    .attr("class", "links")
+                    .selectAll("line")
+                    .data(links)
+                    .join("line")
+                    .attr(
+                        "class",
+                        (d) =>
+                            `link ${d.is_external ? "external" : "internal"}`,
+                    )
+                    .attr(
+                        "marker-end",
+                        (d) =>
+                            `url(#arrow-${d.is_external ? "external" : "internal"})`,
+                    );
+
+                // node groups
+                const node = g
+                    .append("g")
+                    .attr("class", "nodes")
+                    .selectAll("g")
+                    .data(nodes)
+                    .join("g")
+                    .attr("class", "node-group")
+                    .call(
+                        d3
+                            .drag()
+                            .on("start", dragStart)
+                            .on("drag", dragging)
+                            .on("end", dragEnd),
+                    )
+                    .on("click", (event, d) => {
+                        event.stopPropagation();
+                        selectNode(d, links, nodes);
+                    });
+
+                // pulse ring
+                node.append("circle")
+                    .attr(
+                        "class",
+                        (d) =>
+                            `node-ring ${d.is_external ? "external" : "internal"} ${d.is_external ? "" : "pulsing"}`,
+                    )
+                    .attr("r", 14);
+
+                // core circle
+                node.append("circle")
+                    .attr(
+                        "class",
+                        (d) =>
+                            `node-core ${d.is_external ? "external" : "internal"}`,
+                    )
+                    .attr("r", (d) => (d.is_external ? 6 : 10));
+
+                // label (below node)
+                node.append("text")
+                    .attr(
+                        "class",
+                        (d) => `node-label ${d.is_external ? "external" : ""}`,
+                    )
+                    .attr("dy", (d) => (d.is_external ? 18 : 24))
+                    .text((d) => (d.is_external ? d.id : d.hostname));
+
+                // deselect on canvas click
+                svg.on("click", () => {
+                    selectedNode = null;
+                    highlightAll(link, node);
+                    showPanelEmpty();
+                });
+
+                // ── Simulation ────────────────────────────────────────────────────────────
+                simulation = d3
+                    .forceSimulation(nodes)
+                    .force(
+                        "link",
+                        d3
+                            .forceLink(links)
+                            .id((d) => d.id)
+                            .distance(140)
+                            .strength(0.5),
+                    )
+                    .force("charge", d3.forceManyBody().strength(-400))
+                    .force("center", d3.forceCenter(W / 2, H / 2))
+                    .force("collide", d3.forceCollide(30))
+                    .on("tick", () => {
+                        link.attr("x1", (d) => d.source.x)
+                            .attr("y1", (d) => d.source.y)
+                            .attr("x2", (d) => d.target.x)
+                            .attr("y2", (d) => d.target.y);
+                        node.attr(
+                            "transform",
+                            (d) => `translate(${d.x},${d.y})`,
+                        );
+                    });
+
+                window._simulation = simulation;
+                window._link = link;
+                window._node = node;
+            }
+
+            // ── Drag ─────────────────────────────────────────────────────────────────────
+            function dragStart(event, d) {
+                if (!event.active)
+                    window._simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+            function dragging(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+            function dragEnd(event, d) {
+                if (!event.active) window._simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+
+            // ── Selection & Highlight ────────────────────────────────────────────────────
+            function selectNode(d, links, nodes) {
+                selectedNode = d;
+
+                const connectedIds = new Set();
+                links.forEach((l) => {
+                    const src =
+                        typeof l.source === "object" ? l.source.id : l.source;
+                    const tgt =
+                        typeof l.target === "object" ? l.target.id : l.target;
+                    if (src === d.id || tgt === d.id) {
+                        connectedIds.add(src);
+                        connectedIds.add(tgt);
+                    }
+                });
+
+                window._link.classed("highlighted", (l) => {
+                    const src =
+                        typeof l.source === "object" ? l.source.id : l.source;
+                    const tgt =
+                        typeof l.target === "object" ? l.target.id : l.target;
+                    return src === d.id || tgt === d.id;
+                });
+
+                window._link.style("opacity", (l) => {
+                    const src =
+                        typeof l.source === "object" ? l.source.id : l.source;
+                    const tgt =
+                        typeof l.target === "object" ? l.target.id : l.target;
+                    return src === d.id || tgt === d.id ? 1 : 0.08;
+                });
+
+                window._node.style("opacity", (n) =>
+                    connectedIds.has(n.id) || n.id === d.id ? 1 : 0.15,
+                );
+
+                renderPanel(d, links, nodes);
+            }
+
+            function highlightAll(link, node) {
+                link.classed("highlighted", false).style("opacity", 1);
+                node.style("opacity", 1);
+            }
+
+            // ── Panel ─────────────────────────────────────────────────────────────────────
+            function showPanelEmpty() {
+                document.getElementById("panel-content").innerHTML =
+                    `<div class="panel-empty">Haz click en un nodo<br>para ver sus detalles<br>y conexiones.</div>`;
+            }
+
+            function renderPanel(d, links, nodes) {
+                const nodeMap = Object.fromEntries(nodes.map((n) => [n.id, n]));
+
+                // conexiones salientes desde este nodo
+                const outgoing = links.filter((l) => {
+                    const src =
+                        typeof l.source === "object" ? l.source.id : l.source;
+                    return src === d.id;
+                });
+
+                // conexiones entrantes
+                const incoming = links.filter((l) => {
+                    const tgt =
+                        typeof l.target === "object" ? l.target.id : l.target;
+                    return tgt === d.id;
+                });
+
+                const allPorts = [
+                    ...new Set(outgoing.flatMap((l) => l.ports)),
+                ].sort((a, b) => a - b);
+
+                let html = "";
+
+                // tipo
+                html += `<div class="info-block">
+    <div class="info-label">TIPO</div>
+    <div class="info-value ${d.is_external ? "danger" : ""}">${d.is_external ? "⚠ EXTERNO" : "✓ INTERNO"}</div>
+  </div>`;
+
+                // hostname
+                html += `<div class="info-block">
+    <div class="info-label">HOSTNAME</div>
+    <div class="info-value normal">${d.hostname}</div>
+  </div>`;
+
+                // IPs
+                if (d.ips && d.ips.length > 0) {
+                    html += `<div class="info-block">
+      <div class="info-label">IPs (${d.ips.length})</div>
+      <div>${d.ips.map((ip) => `<span class="tag">${ip}</span>`).join("")}</div>
+    </div>`;
+                }
+
+                // puertos usados (salientes)
+                if (allPorts.length > 0) {
+                    html += `<div class="info-block">
+      <div class="info-label">PUERTOS USADOS</div>
+      <div>${allPorts.map((p) => `<span class="tag port">${p}</span>`).join("")}</div>
+    </div>`;
+                }
+
+                // conexiones salientes
+                if (outgoing.length > 0) {
+                    html += `<div class="info-block">
+      <div class="info-label">CONECTA CON (${outgoing.length})</div>`;
+                    outgoing.forEach((l) => {
+                        const tgt =
+                            typeof l.target === "object"
+                                ? l.target.id
+                                : l.target;
+                        const isExt = l.is_external;
+                        html += `<div class="conn-row">
+        <span class="conn-target ${isExt ? "ext" : ""}">${isExt ? "⚠ " : ""}${tgt}</span>
+        <span class="conn-count">${l.connection_count}x · ${l.ports.slice(0, 3).join(",")}${l.ports.length > 3 ? "…" : ""}</span>
+      </div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                // conexiones entrantes
+                if (incoming.length > 0) {
+                    html += `<div class="info-block">
+      <div class="info-label">RECIBE DE (${incoming.length})</div>`;
+                    incoming.forEach((l) => {
+                        const src =
+                            typeof l.source === "object"
+                                ? l.source.id
+                                : l.source;
+                        html += `<div class="conn-row">
+        <span class="conn-target">${src}</span>
+        <span class="conn-count">${l.connection_count}x</span>
+      </div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                document.getElementById("panel-content").innerHTML = html;
+            }
+
+            // ── Controls ─────────────────────────────────────────────────────────────────
+            function resetZoom() {
+                window._svg
+                    .transition()
+                    .duration(400)
+                    .call(window._zoom.transform, d3.zoomIdentity);
+            }
+
+            function toggleExternal() {
+                showExternal = !showExternal;
+                if (graphData) renderGraph(graphData);
+            }
+
+            function reheat() {
+                if (window._simulation) {
+                    window._simulation.alpha(0.8).restart();
+                }
+            }
+        </script>
+    </body>
+</html>

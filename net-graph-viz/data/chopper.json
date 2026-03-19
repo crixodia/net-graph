@@ -1,0 +1,240 @@
+{
+  "server": {
+    "hostname": "chopper",
+    "ips": ["192.168.1.16"]
+  },
+  "connections": [
+    {
+      "remote_ip": "192.168.1.29",
+      "remote_port": 8080
+    },
+    {
+      "remote_ip": "127.0.0.1",
+      "remote_port": 1025
+    },
+    {
+      "remote_ip": "127.0.0.1",
+      "remote_port": 1028
+    },
+    {
+      "remote_ip": "127.0.0.1",
+      "remote_port": 1027
+    },
+    {
+      "remote_ip": "192.168.1.40",
+      "remote_port": 445
+    },
+    {
+      "remote_ip": "52.110.1.77",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.110.1.82",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "172.217.30.170",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "20.190.151.70",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "172.217.162.138",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "20.190.151.70",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.110.1.21",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.110.1.64",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "74.125.247.128",
+      "remote_port": 3478
+    },
+    {
+      "remote_ip": "200.24.129.8",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "200.24.129.8",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "72.145.35.117",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "200.24.129.8",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "72.145.35.117",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "200.24.129.8",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "200.24.129.126",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "128.85.75.152",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "4.160.58.169",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "92.122.90.119",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "92.122.88.30",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "200.24.129.16",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "200.24.129.126",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "128.85.75.152",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "200.24.129.126",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "200.24.129.126",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "200.24.129.126",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "200.24.129.126",
+      "remote_port": 80
+    },
+    {
+      "remote_ip": "127.0.0.1",
+      "remote_port": 35600
+    },
+    {
+      "remote_ip": "74.125.247.128",
+      "remote_port": 3478
+    },
+    {
+      "remote_ip": "128.85.75.152",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "127.0.0.1",
+      "remote_port": 35600
+    },
+    {
+      "remote_ip": "20.190.151.70",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.110.1.8",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.110.1.8",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.110.1.79",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.110.1.79",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "20.96.153.111",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "20.75.60.91",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "216.239.34.223",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "20.190.151.70",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "104.18.156.37",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "104.16.56.40",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "172.64.146.73",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "162.159.61.3",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.123.247.77",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "104.18.36.199",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "18.155.252.76",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "104.16.56.40",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "18.155.252.76",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "172.64.41.3",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "172.172.255.217",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "150.171.27.11",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "127.0.0.1",
+      "remote_port": 49350
+    }
+  ]
+}
