@@ -630,20 +630,35 @@
                         );
                 });
 
-                // Filter nodes and edges
+                // Filter nodes and edges.
+                // IMPORTANT: graphData.edges must never be mutated — D3 replaces source/target
+                // with node object references after the first tick. We preserve the original
+                // string IDs in _src/_tgt and always filter/read from those.
+                if (!data._prepared) {
+                    data.edges.forEach((e) => {
+                        e._src = e.source;
+                        e._tgt = e.target;
+                    });
+                    data._prepared = true;
+                }
+
                 const nodes = data.nodes.filter(
                     (n) => showExternal || !n.is_external,
                 );
                 const nodeIds = new Set(nodes.map((n) => n.id));
-                const links = data.edges.filter(
-                    (e) =>
-                        !e.is_self_loop &&
-                        nodeIds.has(e.source) &&
-                        nodeIds.has(e.target),
-                );
-                const selfLoops = data.edges.filter(
-                    (e) => e.is_self_loop && nodeIds.has(e.source),
-                );
+
+                const links = data.edges
+                    .filter(
+                        (e) =>
+                            !e.is_self_loop &&
+                            nodeIds.has(e._src) &&
+                            nodeIds.has(e._tgt),
+                    )
+                    .map((e) => ({ ...e, source: e._src, target: e._tgt }));
+
+                const selfLoops = data.edges
+                    .filter((e) => e.is_self_loop && nodeIds.has(e._src))
+                    .map((e) => ({ ...e, source: e._src, target: e._tgt }));
 
                 // ── Regular edges ──────────────────────────────────────────────────────────
                 const link = g
@@ -748,16 +763,12 @@
                             (d) => `translate(${d.x},${d.y})`,
                         );
 
-                        // Move self-loop arcs with their node
+                        // Move self-loop arcs with their node (use _src — immune to D3 mutation)
                         const nodeMap = Object.fromEntries(
                             nodes.map((n) => [n.id, n]),
                         );
                         loopArc.attr("d", (d) => {
-                            const sid =
-                                typeof d.source === "object"
-                                    ? d.source.id
-                                    : d.source;
-                            const n = nodeMap[sid];
+                            const n = nodeMap[d._src];
                             return n ? selfLoopPath(n.x, n.y, 13) : "";
                         });
                     });
@@ -786,36 +797,28 @@
             }
 
             // ── Selection ─────────────────────────────────────────────────────────────────
-            function getId(x) {
-                return typeof x === "object" ? x.id : x;
-            }
-
             function selectNode(d, links, selfLoops, nodes, loopNodeIds) {
                 const connected = new Set([d.id]);
                 links.forEach((l) => {
-                    if (getId(l.source) === d.id || getId(l.target) === d.id) {
-                        connected.add(getId(l.source));
-                        connected.add(getId(l.target));
+                    if (l._src === d.id || l._tgt === d.id) {
+                        connected.add(l._src);
+                        connected.add(l._tgt);
                     }
                 });
 
                 window._link
                     .classed(
                         "highlighted",
-                        (l) =>
-                            getId(l.source) === d.id ||
-                            getId(l.target) === d.id,
+                        (l) => l._src === d.id || l._tgt === d.id,
                     )
                     .style("opacity", (l) =>
-                        getId(l.source) === d.id || getId(l.target) === d.id
-                            ? 1
-                            : 0.06,
+                        l._src === d.id || l._tgt === d.id ? 1 : 0.06,
                     );
 
                 window._loopArc
-                    .classed("highlighted", (l) => getId(l.source) === d.id)
-                    .classed("dimmed", (l) => getId(l.source) !== d.id)
-                    .style("opacity", null); // let CSS classes handle opacity
+                    .classed("highlighted", (l) => l._src === d.id)
+                    .classed("dimmed", (l) => l._src !== d.id)
+                    .style("opacity", null);
 
                 window._node.style("opacity", (n) =>
                     connected.has(n.id) ? 1 : 0.12,
@@ -840,11 +843,9 @@
             }
 
             function renderPanel(d, links, selfLoops, nodes, loopNodeIds) {
-                const outgoing = links.filter((l) => getId(l.source) === d.id);
-                const incoming = links.filter((l) => getId(l.target) === d.id);
-                const myLoops = selfLoops.filter(
-                    (l) => getId(l.source) === d.id,
-                );
+                const outgoing = links.filter((l) => l._src === d.id);
+                const incoming = links.filter((l) => l._tgt === d.id);
+                const myLoops = selfLoops.filter((l) => l._src === d.id);
                 const allPorts = [
                     ...new Set(outgoing.flatMap((l) => l.ports)),
                 ].sort((a, b) => a - b);
@@ -867,6 +868,12 @@
                 html += `<div class="info-block">
     <div class="info-label">HOSTNAME</div>
     <div class="info-value normal">${d.hostname}</div></div>`;
+
+                if (!d.is_external && d.snapshot_count > 0) {
+                    html += `<div class="info-block">
+      <div class="info-label">SNAPSHOTS</div>
+      <div class="info-value ${d.snapshot_count > 1 ? "loop" : "normal"}">${d.snapshot_count} captura${d.snapshot_count > 1 ? "s fusionadas" : ""}</div></div>`;
+                }
 
                 if (d.ips && d.ips.length > 0) {
                     html += `<div class="info-block">
@@ -895,9 +902,8 @@
                 if (outgoing.length > 0) {
                     html += `<div class="info-block"><div class="info-label">CONECTA CON (${outgoing.length})</div>`;
                     outgoing.forEach((l) => {
-                        const tgt = getId(l.target);
                         html += `<div class="conn-row">
-        <span class="conn-target ${l.is_external ? "ext" : ""}">${l.is_external ? "⚠ " : ""}${tgt}</span>
+        <span class="conn-target ${l.is_external ? "ext" : ""}">${l.is_external ? "⚠ " : ""}${l._tgt}</span>
         <span class="conn-count">${l.connection_count}x · ${l.ports.slice(0, 3).join(",")}${l.ports.length > 3 ? "…" : ""}</span>
       </div>`;
                     });
@@ -907,9 +913,8 @@
                 if (incoming.length > 0) {
                     html += `<div class="info-block"><div class="info-label">RECIBE DE (${incoming.length})</div>`;
                     incoming.forEach((l) => {
-                        const src = getId(l.source);
                         html += `<div class="conn-row">
-        <span class="conn-target">${src}</span>
+        <span class="conn-target">${l._src}</span>
         <span class="conn-count">${l.connection_count}x</span>
       </div>`;
                     });
