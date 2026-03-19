@@ -7,6 +7,7 @@ use std::io::Write;
 struct ServerInfo {
     hostname: String,
     ips: Vec<String>,
+    loopbacks: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -25,29 +26,30 @@ fn get_hostname() -> String {
     hostname::get().unwrap().to_string_lossy().to_string()
 }
 
-fn get_local_ips() -> Vec<String> {
-    let mut ips = Vec::new();
+fn get_local_ips() -> (Vec<String>, Vec<String>) {
+    let mut ips: Vec<String> = Vec::new();
+    let mut loopbacks: Vec<String> = Vec::new();
 
-    // Método 1: via interfaces de red (más completo)
     if let Ok(interfaces) = get_if_addrs::get_if_addrs() {
         for iface in interfaces {
-            // Excluir loopback (127.x.x.x y ::1)
-            if !iface.is_loopback() {
+            if iface.is_loopback() {
+                loopbacks.push(iface.ip().to_string());
+            } else {
                 ips.push(iface.ip().to_string());
             }
         }
     }
 
-    // Fallback si no se encontró nada
     if ips.is_empty() {
         ips.push("127.0.0.1".to_string());
     }
 
-    ips
+    (ips, loopbacks)
 }
 
 fn main() {
     let hostname = get_hostname();
+    let (ips, loopbacks) = get_local_ips();
 
     let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
     let proto_flags = ProtocolFlags::TCP;
@@ -61,7 +63,6 @@ fn main() {
             let remote_ip = tcp.remote_addr.to_string();
             let remote_port = tcp.remote_port;
 
-            // Filtrar conexiones triviales (puerto 0 = sin conexión activa)
             if remote_port != 0 {
                 connections.push(Connection {
                     remote_ip,
@@ -74,7 +75,8 @@ fn main() {
     let data = ConnectionsFile {
         server: ServerInfo {
             hostname,
-            ips: get_local_ips(),
+            ips,
+            loopbacks,
         },
         connections,
     };

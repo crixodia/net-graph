@@ -8,23 +8,67 @@
       "2800:5f0:520:71c1:b871:8a8c:6216:99b1",
       "192.168.1.29",
       "172.24.192.1"
+    ],
+    "loopbacks": [
+      "::1",
+      "127.0.0.1"
     ]
   },
   "connections": [
+    {
+      "remote_ip": "18.97.36.70",
+      "remote_port": 443
+    },
     {
       "remote_ip": "34.107.243.93",
       "remote_port": 443
     },
     {
-      "remote_ip": "74.125.247.128",
-      "remote_port": 3478
-    },
-    {
-      "remote_ip": "52.182.143.211",
+      "remote_ip": "185.205.70.10",
       "remote_port": 443
     },
     {
-      "remote_ip": "34.120.208.123",
+      "remote_ip": "142.251.133.110",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "142.251.133.110",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "185.70.42.43",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "185.70.42.43",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "185.70.42.43",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "51.116.246.105",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "176.119.200.8",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "52.168.117.168",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "185.70.42.43",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "185.70.42.43",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "185.70.42.43",
       "remote_port": 443
     },
     {
@@ -36,15 +80,19 @@
       "remote_port": 443
     },
     {
-      "remote_ip": "185.70.42.43",
+      "remote_ip": "185.205.70.10",
       "remote_port": 443
     },
     {
-      "remote_ip": "18.97.36.7",
+      "remote_ip": "185.205.70.10",
       "remote_port": 443
     },
     {
-      "remote_ip": "4.160.58.170",
+      "remote_ip": "176.119.200.8",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "176.119.200.8",
       "remote_port": 443
     },
     {
@@ -76,15 +124,15 @@
       "remote_port": 443
     },
     {
-      "remote_ip": "2800:3f0:4005:40b::2003",
+      "remote_ip": "2606:4700::6812:697",
       "remote_port": 443
     },
     {
-      "remote_ip": "2606:4700::6811:1fde",
+      "remote_ip": "2a04:4e42:200::347",
       "remote_port": 443
     },
     {
-      "remote_ip": "2606:4700::6811:1fde",
+      "remote_ip": "2a04:4e42:600::347",
       "remote_port": 443
     },
     {
@@ -92,43 +140,23 @@
       "remote_port": 3478
     },
     {
-      "remote_ip": "2607:f8b0:400c:c08::54",
-      "remote_port": 443
-    },
-    {
-      "remote_ip": "2607:f8b0:400c:c08::54",
-      "remote_port": 443
-    },
-    {
-      "remote_ip": "2800:3f0:4005:404::200a",
-      "remote_port": 443
-    },
-    {
-      "remote_ip": "2800:3f0:4005:404::200a",
-      "remote_port": 443
-    },
-    {
-      "remote_ip": "2800:3f0:4005:40a::200a",
-      "remote_port": 443
-    },
-    {
-      "remote_ip": "2800:3f0:4005:40a::200a",
-      "remote_port": 443
-    },
-    {
       "remote_ip": "2a04:4e42:200::347",
       "remote_port": 443
     },
     {
-      "remote_ip": "2a04:4e42:200::347",
+      "remote_ip": "2a04:4e42::347",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "2607:6bc0::10",
+      "remote_port": 443
+    },
+    {
+      "remote_ip": "2607:6bc0::10",
       "remote_port": 443
     },
     {
       "remote_ip": "2603:1030:210:f::2",
-      "remote_port": 443
-    },
-    {
-      "remote_ip": "2606:4700::6812:797",
       "remote_port": 443
     },
     {

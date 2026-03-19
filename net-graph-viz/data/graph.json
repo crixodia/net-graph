@@ -6,6 +6,10 @@
       "ips": [
         "192.168.1.16"
       ],
+      "loopbacks": [
+        "::1",
+        "127.0.0.1"
+      ],
       "is_external": false
     },
     {
@@ -19,366 +23,19 @@
         "192.168.1.29",
         "172.24.192.1"
       ],
+      "loopbacks": [
+        "::1",
+        "127.0.0.1"
+      ],
       "is_external": false
     },
     {
-      "id": "192.168.1.40",
-      "hostname": "192.168.1.40",
+      "id": "104.18.38.233",
+      "hostname": "104.18.38.233",
       "ips": [
-        "192.168.1.40"
+        "104.18.38.233"
       ],
-      "is_external": true
-    },
-    {
-      "id": "2607:6bc0::10",
-      "hostname": "2607:6bc0::10",
-      "ips": [
-        "2607:6bc0::10"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "127.0.0.1",
-      "hostname": "127.0.0.1",
-      "ips": [
-        "127.0.0.1"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "172.64.41.3",
-      "hostname": "172.64.41.3",
-      "ips": [
-        "172.64.41.3"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "4.160.58.169",
-      "hostname": "4.160.58.169",
-      "ips": [
-        "4.160.58.169"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "92.122.88.30",
-      "hostname": "92.122.88.30",
-      "ips": [
-        "92.122.88.30"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2a03:2880:f0aa:14:face:b00c:0:3",
-      "hostname": "2a03:2880:f0aa:14:face:b00c:0:3",
-      "ips": [
-        "2a03:2880:f0aa:14:face:b00c:0:3"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "172.172.255.217",
-      "hostname": "172.172.255.217",
-      "ips": [
-        "172.172.255.217"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2606:4700::6810:1092",
-      "hostname": "2606:4700::6810:1092",
-      "ips": [
-        "2606:4700::6810:1092"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "72.145.35.117",
-      "hostname": "72.145.35.117",
-      "ips": [
-        "72.145.35.117"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2606:4700::6812:797",
-      "hostname": "2606:4700::6812:797",
-      "ips": [
-        "2606:4700::6812:797"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "172.64.146.73",
-      "hostname": "172.64.146.73",
-      "ips": [
-        "172.64.146.73"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "20.75.60.91",
-      "hostname": "20.75.60.91",
-      "ips": [
-        "20.75.60.91"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "176.119.200.8",
-      "hostname": "176.119.200.8",
-      "ips": [
-        "176.119.200.8"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "52.110.1.77",
-      "hostname": "52.110.1.77",
-      "ips": [
-        "52.110.1.77"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2606:4700::6812:dcd",
-      "hostname": "2606:4700::6812:dcd",
-      "ips": [
-        "2606:4700::6812:dcd"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2606:4700::6812:123e",
-      "hostname": "2606:4700::6812:123e",
-      "ips": [
-        "2606:4700::6812:123e"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "172.217.30.170",
-      "hostname": "172.217.30.170",
-      "ips": [
-        "172.217.30.170"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2606:4700::6811:1fde",
-      "hostname": "2606:4700::6811:1fde",
-      "ips": [
-        "2606:4700::6811:1fde"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2a03:2880:f32f:3:face:b00c:0:25de",
-      "hostname": "2a03:2880:f32f:3:face:b00c:0:25de",
-      "ips": [
-        "2a03:2880:f32f:3:face:b00c:0:25de"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "52.107.247.81",
-      "hostname": "52.107.247.81",
-      "ips": [
-        "52.107.247.81"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "172.217.162.138",
-      "hostname": "172.217.162.138",
-      "ips": [
-        "172.217.162.138"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "200.24.129.16",
-      "hostname": "200.24.129.16",
-      "ips": [
-        "200.24.129.16"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2a03:2880:f32f:8a:face:b00c:0:6206",
-      "hostname": "2a03:2880:f32f:8a:face:b00c:0:6206",
-      "ips": [
-        "2a03:2880:f32f:8a:face:b00c:0:6206"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "128.85.75.152",
-      "hostname": "128.85.75.152",
-      "ips": [
-        "128.85.75.152"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2a04:4e42:400::347",
-      "hostname": "2a04:4e42:400::347",
-      "ips": [
-        "2a04:4e42:400::347"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2603:1030:807:3::1f",
-      "hostname": "2603:1030:807:3::1f",
-      "ips": [
-        "2603:1030:807:3::1f"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "150.171.27.11",
-      "hostname": "150.171.27.11",
-      "ips": [
-        "150.171.27.11"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "104.18.36.199",
-      "hostname": "104.18.36.199",
-      "ips": [
-        "104.18.36.199"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2606:4700::6812:ccd",
-      "hostname": "2606:4700::6812:ccd",
-      "ips": [
-        "2606:4700::6812:ccd"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "74.125.247.128",
-      "hostname": "74.125.247.128",
-      "ips": [
-        "74.125.247.128"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "216.239.34.223",
-      "hostname": "216.239.34.223",
-      "ips": [
-        "216.239.34.223"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "92.122.90.119",
-      "hostname": "92.122.90.119",
-      "ips": [
-        "92.122.90.119"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "138.255.98.181",
-      "hostname": "138.255.98.181",
-      "ips": [
-        "138.255.98.181"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "18.155.252.76",
-      "hostname": "18.155.252.76",
-      "ips": [
-        "18.155.252.76"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "200.24.129.126",
-      "hostname": "200.24.129.126",
-      "ips": [
-        "200.24.129.126"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "34.107.243.93",
-      "hostname": "34.107.243.93",
-      "ips": [
-        "34.107.243.93"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "104.16.56.40",
-      "hostname": "104.16.56.40",
-      "ips": [
-        "104.16.56.40"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2a04:4e42:200::347",
-      "hostname": "2a04:4e42:200::347",
-      "ips": [
-        "2a04:4e42:200::347"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "52.110.1.8",
-      "hostname": "52.110.1.8",
-      "ips": [
-        "52.110.1.8"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "162.159.61.3",
-      "hostname": "162.159.61.3",
-      "ips": [
-        "162.159.61.3"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "172.215.132.17",
-      "hostname": "172.215.132.17",
-      "ips": [
-        "172.215.132.17"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2606:4700:3032::ac43:ca41",
-      "hostname": "2606:4700:3032::ac43:ca41",
-      "ips": [
-        "2606:4700:3032::ac43:ca41"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "20.96.153.111",
-      "hostname": "20.96.153.111",
-      "ips": [
-        "20.96.153.111"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "52.110.1.21",
-      "hostname": "52.110.1.21",
-      "ips": [
-        "52.110.1.21"
-      ],
+      "loopbacks": [],
       "is_external": true
     },
     {
@@ -387,110 +44,25 @@
       "ips": [
         "185.70.42.43"
       ],
+      "loopbacks": [],
       "is_external": true
     },
     {
-      "id": "2603:1030:210:f::2",
-      "hostname": "2603:1030:210:f::2",
+      "id": "2a04:4e42:600::347",
+      "hostname": "2a04:4e42:600::347",
       "ips": [
-        "2603:1030:210:f::2"
+        "2a04:4e42:600::347"
       ],
+      "loopbacks": [],
       "is_external": true
     },
     {
-      "id": "52.110.1.82",
-      "hostname": "52.110.1.82",
+      "id": "2603:1030:807:3::1f",
+      "hostname": "2603:1030:807:3::1f",
       "ips": [
-        "52.110.1.82"
+        "2603:1030:807:3::1f"
       ],
-      "is_external": true
-    },
-    {
-      "id": "2603:1063:9:11f::365:7ea3",
-      "hostname": "2603:1063:9:11f::365:7ea3",
-      "ips": [
-        "2603:1063:9:11f::365:7ea3"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "200.24.129.8",
-      "hostname": "200.24.129.8",
-      "ips": [
-        "200.24.129.8"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "2800:3f0:4005:417::2003",
-      "hostname": "2800:3f0:4005:417::2003",
-      "ips": [
-        "2800:3f0:4005:417::2003"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "52.110.1.64",
-      "hostname": "52.110.1.64",
-      "ips": [
-        "52.110.1.64"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "104.18.156.37",
-      "hostname": "104.18.156.37",
-      "ips": [
-        "104.18.156.37"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "104.19.230.21",
-      "hostname": "104.19.230.21",
-      "ips": [
-        "104.19.230.21"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "18.97.36.48",
-      "hostname": "18.97.36.48",
-      "ips": [
-        "18.97.36.48"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "199.232.192.193",
-      "hostname": "199.232.192.193",
-      "ips": [
-        "199.232.192.193"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "52.110.1.79",
-      "hostname": "52.110.1.79",
-      "ips": [
-        "52.110.1.79"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "20.190.151.70",
-      "hostname": "20.190.151.70",
-      "ips": [
-        "20.190.151.70"
-      ],
-      "is_external": true
-    },
-    {
-      "id": "52.123.247.77",
-      "hostname": "52.123.247.77",
-      "ips": [
-        "52.123.247.77"
-      ],
+      "loopbacks": [],
       "is_external": true
     },
     {
@@ -499,139 +71,529 @@
       "ips": [
         "2603:1061:13f2:1015::365:590"
       ],
+      "loopbacks": [],
       "is_external": true
     },
     {
-      "id": "104.19.229.21",
-      "hostname": "104.19.229.21",
+      "id": "185.205.70.10",
+      "hostname": "185.205.70.10",
       "ips": [
-        "104.19.229.21"
+        "185.205.70.10"
       ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "2603:1030:210:f::2",
+      "hostname": "2603:1030:210:f::2",
+      "ips": [
+        "2603:1030:210:f::2"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "151.101.129.91",
+      "hostname": "151.101.129.91",
+      "ips": [
+        "151.101.129.91"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "34.160.144.191",
+      "hostname": "34.160.144.191",
+      "ips": [
+        "34.160.144.191"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "191.235.123.80",
+      "hostname": "191.235.123.80",
+      "ips": [
+        "191.235.123.80"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "34.107.221.82",
+      "hostname": "34.107.221.82",
+      "ips": [
+        "34.107.221.82"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "2a04:4e42::347",
+      "hostname": "2a04:4e42::347",
+      "ips": [
+        "2a04:4e42::347"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "34.117.64.196",
+      "hostname": "34.117.64.196",
+      "ips": [
+        "34.117.64.196"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "52.168.117.168",
+      "hostname": "52.168.117.168",
+      "ips": [
+        "52.168.117.168"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "142.251.132.170",
+      "hostname": "142.251.132.170",
+      "ips": [
+        "142.251.132.170"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "2607:6bc0::10",
+      "hostname": "2607:6bc0::10",
+      "ips": [
+        "2607:6bc0::10"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "151.101.1.91",
+      "hostname": "151.101.1.91",
+      "ips": [
+        "151.101.1.91"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "151.101.3.19",
+      "hostname": "151.101.3.19",
+      "ips": [
+        "151.101.3.19"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "52.107.247.81",
+      "hostname": "52.107.247.81",
+      "ips": [
+        "52.107.247.81"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "34.107.243.93",
+      "hostname": "34.107.243.93",
+      "ips": [
+        "34.107.243.93"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "172.215.132.17",
+      "hostname": "172.215.132.17",
+      "ips": [
+        "172.215.132.17"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "185.199.109.133",
+      "hostname": "185.199.109.133",
+      "ips": [
+        "185.199.109.133"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "20.69.137.228",
+      "hostname": "20.69.137.228",
+      "ips": [
+        "20.69.137.228"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "52.123.247.22",
+      "hostname": "52.123.247.22",
+      "ips": [
+        "52.123.247.22"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "172.172.255.218",
+      "hostname": "172.172.255.218",
+      "ips": [
+        "172.172.255.218"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "20.190.151.8",
+      "hostname": "20.190.151.8",
+      "ips": [
+        "20.190.151.8"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "74.163.187.151",
+      "hostname": "74.163.187.151",
+      "ips": [
+        "74.163.187.151"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "74.125.247.128",
+      "hostname": "74.125.247.128",
+      "ips": [
+        "74.125.247.128"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "4.160.58.169",
+      "hostname": "4.160.58.169",
+      "ips": [
+        "4.160.58.169"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "2001:4860:4864:4:8000::",
+      "hostname": "2001:4860:4864:4:8000::",
+      "ips": [
+        "2001:4860:4864:4:8000::"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "104.18.40.238",
+      "hostname": "104.18.40.238",
+      "ips": [
+        "104.18.40.238"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "142.251.129.206",
+      "hostname": "142.251.129.206",
+      "ips": [
+        "142.251.129.206"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "172.67.71.159",
+      "hostname": "172.67.71.159",
+      "ips": [
+        "172.67.71.159"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "51.116.246.105",
+      "hostname": "51.116.246.105",
+      "ips": [
+        "51.116.246.105"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "176.119.200.8",
+      "hostname": "176.119.200.8",
+      "ips": [
+        "176.119.200.8"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "151.101.193.91",
+      "hostname": "151.101.193.91",
+      "ips": [
+        "151.101.193.91"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "2606:4700::6812:697",
+      "hostname": "2606:4700::6812:697",
+      "ips": [
+        "2606:4700::6812:697"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "2a04:4e42:200::347",
+      "hostname": "2a04:4e42:200::347",
+      "ips": [
+        "2a04:4e42:200::347"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "18.97.36.70",
+      "hostname": "18.97.36.70",
+      "ips": [
+        "18.97.36.70"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "4.203.73.113",
+      "hostname": "4.203.73.113",
+      "ips": [
+        "4.203.73.113"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "151.101.65.91",
+      "hostname": "151.101.65.91",
+      "ips": [
+        "151.101.65.91"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "140.82.114.3",
+      "hostname": "140.82.114.3",
+      "ips": [
+        "140.82.114.3"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "192.168.1.40",
+      "hostname": "192.168.1.40",
+      "ips": [
+        "192.168.1.40"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "151.101.195.19",
+      "hostname": "151.101.195.19",
+      "ips": [
+        "151.101.195.19"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "57.144.115.32",
+      "hostname": "57.144.115.32",
+      "ips": [
+        "57.144.115.32"
+      ],
+      "loopbacks": [],
+      "is_external": true
+    },
+    {
+      "id": "142.251.133.110",
+      "hostname": "142.251.133.110",
+      "ips": [
+        "142.251.133.110"
+      ],
+      "loopbacks": [],
       "is_external": true
     }
   ],
   "edges": [
     {
       "source": "chopper",
-      "target": "104.16.56.40",
+      "target": "104.18.38.233",
+      "ports": [
+        80
+      ],
+      "connection_count": 2,
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "chopper",
+      "target": "104.18.40.238",
+      "ports": [
+        443
+      ],
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "chopper",
+      "target": "140.82.114.3",
+      "ports": [
+        443
+      ],
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "chopper",
+      "target": "142.251.129.206",
+      "ports": [
+        443
+      ],
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "chopper",
+      "target": "142.251.132.170",
+      "ports": [
+        443
+      ],
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "chopper",
+      "target": "151.101.1.91",
       "ports": [
         443
       ],
       "connection_count": 2,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "104.18.156.37",
+      "target": "151.101.129.91",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "104.18.36.199",
+      "target": "151.101.193.91",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "127.0.0.1",
+      "target": "151.101.195.19",
       "ports": [
-        1025,
-        1026,
-        1027,
-        1028,
-        35600,
-        49350
+        443
       ],
-      "connection_count": 7,
-      "is_external": true
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "128.85.75.152",
+      "target": "151.101.3.19",
+      "ports": [
+        443
+      ],
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "chopper",
+      "target": "151.101.65.91",
       "ports": [
         443
       ],
       "connection_count": 3,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "150.171.27.11",
+      "target": "172.172.255.218",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "162.159.61.3",
+      "target": "172.67.71.159",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "172.172.255.217",
+      "target": "185.199.109.133",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "172.217.162.138",
+      "target": "191.235.123.80",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "172.217.30.170",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "172.64.146.73",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "172.64.41.3",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "18.155.252.76",
-      "ports": [
-        443
-      ],
-      "connection_count": 2,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
@@ -640,70 +602,68 @@
         445
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "20.190.151.70",
-      "ports": [
-        443
-      ],
-      "connection_count": 4,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "20.75.60.91",
+      "target": "20.190.151.8",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "20.96.153.111",
+      "target": "20.69.137.228",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "200.24.129.126",
+      "target": "34.107.221.82",
       "ports": [
         80
       ],
-      "connection_count": 6,
-      "is_external": true
+      "connection_count": 2,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "200.24.129.16",
+      "target": "34.107.243.93",
       "ports": [
-        80
+        443
       ],
-      "connection_count": 1,
-      "is_external": true
+      "connection_count": 2,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "200.24.129.8",
-      "ports": [
-        80
-      ],
-      "connection_count": 4,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "216.239.34.223",
+      "target": "34.117.64.196",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "chopper",
+      "target": "34.160.144.191",
+      "ports": [
+        443
+      ],
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
@@ -712,79 +672,38 @@
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "52.110.1.21",
+      "target": "4.203.73.113",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "52.110.1.64",
+      "target": "52.123.247.22",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "52.110.1.77",
+      "target": "57.144.115.32",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "52.110.1.79",
-      "ports": [
-        443
-      ],
-      "connection_count": 2,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "52.110.1.8",
-      "ports": [
-        443
-      ],
-      "connection_count": 2,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "52.110.1.82",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "52.123.247.77",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "chopper",
-      "target": "72.145.35.117",
-      "ports": [
-        443
-      ],
-      "connection_count": 2,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
@@ -792,65 +711,57 @@
       "ports": [
         3478
       ],
-      "connection_count": 2,
-      "is_external": true
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "92.122.88.30",
+      "target": "74.163.187.151",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "chopper",
-      "target": "92.122.90.119",
+      "target": "chopper",
+      "ports": [
+        1025,
+        1028,
+        11838,
+        11839,
+        11855,
+        11856,
+        11933,
+        11934,
+        49350
+      ],
+      "connection_count": 63,
+      "is_external": false,
+      "is_self_loop": true
+    },
+    {
+      "source": "chopper",
+      "target": "hancock",
+      "ports": [
+        1027
+      ],
+      "connection_count": 1,
+      "is_external": false,
+      "is_self_loop": false
+    },
+    {
+      "source": "hancock",
+      "target": "142.251.133.110",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "104.19.229.21",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "104.19.230.21",
-      "ports": [
-        443
-      ],
-      "connection_count": 2,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "127.0.0.1",
-      "ports": [
-        53066,
-        53067,
-        53068,
-        53069
-      ],
-      "connection_count": 4,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "138.255.98.181",
-      "ports": [
-        443
-      ],
-      "connection_count": 6,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -859,7 +770,8 @@
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -868,16 +780,28 @@
         443
       ],
       "connection_count": 3,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
-      "target": "18.97.36.48",
+      "target": "18.97.36.70",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "hancock",
+      "target": "185.205.70.10",
+      "ports": [
+        443
+      ],
+      "connection_count": 3,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -885,8 +809,9 @@
       "ports": [
         443
       ],
-      "connection_count": 8,
-      "is_external": true
+      "connection_count": 7,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -894,17 +819,19 @@
       "ports": [
         445
       ],
-      "connection_count": 1,
-      "is_external": true
+      "connection_count": 2,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
-      "target": "199.232.192.193",
+      "target": "2001:4860:4864:4:8000::",
       "ports": [
-        443
+        3478
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -913,7 +840,8 @@
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -922,7 +850,8 @@
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -931,79 +860,18 @@
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
-      "target": "2603:1063:9:11f::365:7ea3",
+      "target": "2606:4700::6812:697",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2606:4700:3032::ac43:ca41",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2606:4700::6810:1092",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2606:4700::6811:1fde",
-      "ports": [
-        443
-      ],
-      "connection_count": 6,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2606:4700::6812:123e",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2606:4700::6812:797",
-      "ports": [
-        443
-      ],
-      "connection_count": 2,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2606:4700::6812:ccd",
-      "ports": [
-        443
-      ],
-      "connection_count": 3,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2606:4700::6812:dcd",
-      "ports": [
-        443
-      ],
-      "connection_count": 2,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -1011,44 +879,9 @@
       "ports": [
         443
       ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2800:3f0:4005:417::2003",
-      "ports": [
-        443
-      ],
-      "connection_count": 3,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2a03:2880:f0aa:14:face:b00c:0:3",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2a03:2880:f32f:3:face:b00c:0:25de",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
-    },
-    {
-      "source": "hancock",
-      "target": "2a03:2880:f32f:8a:face:b00c:0:6206",
-      "ports": [
-        443
-      ],
-      "connection_count": 1,
-      "is_external": true
+      "connection_count": 2,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -1057,16 +890,28 @@
         443
       ],
       "connection_count": 2,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
-      "target": "2a04:4e42:400::347",
+      "target": "2a04:4e42:600::347",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "hancock",
+      "target": "2a04:4e42::347",
+      "ports": [
+        443
+      ],
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -1075,16 +920,18 @@
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
-      "target": "4.160.58.169",
+      "target": "51.116.246.105",
       "ports": [
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
     },
     {
       "source": "hancock",
@@ -1093,7 +940,40 @@
         443
       ],
       "connection_count": 1,
-      "is_external": true
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "hancock",
+      "target": "52.168.117.168",
+      "ports": [
+        443
+      ],
+      "connection_count": 1,
+      "is_external": true,
+      "is_self_loop": false
+    },
+    {
+      "source": "hancock",
+      "target": "chopper",
+      "ports": [
+        443
+      ],
+      "connection_count": 2,
+      "is_external": false,
+      "is_self_loop": false
+    },
+    {
+      "source": "hancock",
+      "target": "hancock",
+      "ports": [
+        53066,
+        53068,
+        53069
+      ],
+      "connection_count": 3,
+      "is_external": false,
+      "is_self_loop": true
     }
   ]
 }

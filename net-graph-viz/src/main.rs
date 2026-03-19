@@ -9,6 +9,8 @@ use std::path::Path;
 struct ServerInfo {
     hostname: String,
     ips: Vec<String>,
+    #[serde(default)]
+    loopbacks: Vec<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -30,6 +32,7 @@ struct GraphNode {
     id: String,
     hostname: String,
     ips: Vec<String>,
+    loopbacks: Vec<String>,
     is_external: bool,
 }
 
@@ -40,6 +43,7 @@ struct GraphEdge {
     ports: Vec<u16>, // puertos usados en esta conexión
     connection_count: usize,
     is_external: bool,
+    is_self_loop: bool, // true cuando source == target (conexión vía loopback)
 }
 
 #[derive(Serialize, Debug)]
@@ -50,15 +54,37 @@ struct Graph {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-/// Construye un mapa de IP -> hostname a partir de todos los archivos cargados
+/// Construye un mapa de IP -> hostname a partir de todos los archivos cargados.
+/// Incluye tanto IPs normales como loopbacks, ambas apuntan al mismo hostname.
 fn build_ip_map(files: &[ConnectionsFile]) -> HashMap<String, String> {
     let mut map = HashMap::new();
     for f in files {
-        for ip in &f.server.ips {
+        for ip in f.server.ips.iter().chain(f.server.loopbacks.iter()) {
             map.insert(ip.clone(), f.server.hostname.clone());
         }
     }
     map
+}
+
+/// Detecta loopback por rango de IP, sin depender del mapa.
+/// Cubre: 127.x.x.x, ::1, ::, 0.0.0.0 y variantes IPv6 mapeadas a IPv4.
+fn is_loopback_ip(ip: &str) -> bool {
+    let ip = ip.trim();
+    if ip.starts_with("127.") {
+        return true;
+    }
+    if ip == "0.0.0.0" || ip == "::" {
+        return true;
+    }
+    if ip == "::1" {
+        return true;
+    }
+    if let Some(rest) = ip.strip_prefix("::ffff:") {
+        if rest.starts_with("127.") {
+            return true;
+        }
+    }
+    false
 }
 
 fn main() {
@@ -106,43 +132,45 @@ fn main() {
             id: f.server.hostname.clone(),
             hostname: f.server.hostname.clone(),
             ips: f.server.ips.clone(),
+            loopbacks: f.server.loopbacks.clone(),
             is_external: false,
         })
         .collect();
 
     // ── 4. Construir aristas ─────────────────────────────────────────────────
-    // Clave: (source_hostname, target_id) -> (puertos, count, is_external)
-    let mut edge_map: HashMap<(String, String), (HashSet<u16>, usize, bool)> = HashMap::new();
+    // Clave: (source_hostname, target_id) -> (puertos, count, is_external, is_self_loop)
+    let mut edge_map: HashMap<(String, String), (HashSet<u16>, usize, bool, bool)> = HashMap::new();
     let mut external_nodes: HashMap<String, GraphNode> = HashMap::new();
 
     for file in &files {
         let source = &file.server.hostname;
 
         for conn in &file.connections {
-            // Resolver IP remota a hostname si está en el grupo
-            let (target_id, is_external) = if let Some(hostname) = ip_map.get(&conn.remote_ip) {
-                // Es un servidor conocido del grupo
-                if hostname == source {
-                    continue; // saltar conexiones a sí mismo
-                }
-                (hostname.clone(), false)
+            // 1. Loopback por rango de IP -> siempre es auto-conexion del nodo actual
+            let (target_id, is_external, is_self_loop) = if is_loopback_ip(&conn.remote_ip) {
+                (source.clone(), false, true)
+            // 2. IP conocida en el mapa -> servidor del grupo (o auto si coincide hostname)
+            } else if let Some(hostname) = ip_map.get(&conn.remote_ip) {
+                let is_loop = hostname == source;
+                (hostname.clone(), false, is_loop)
+            // 3. Desconocida -> nodo externo
             } else {
-                // Es externo: usar la IP como identificador
                 let ext_id = conn.remote_ip.clone();
-                // Registrar nodo externo si no existe
                 external_nodes.entry(ext_id.clone()).or_insert(GraphNode {
                     id: ext_id.clone(),
                     hostname: ext_id.clone(),
                     ips: vec![ext_id.clone()],
+                    loopbacks: vec![],
                     is_external: true,
                 });
-                (ext_id, true)
+                (ext_id, true, false)
             };
 
             let key = (source.clone(), target_id);
-            let entry = edge_map
-                .entry(key)
-                .or_insert((HashSet::new(), 0, is_external));
+            let entry =
+                edge_map
+                    .entry(key)
+                    .or_insert((HashSet::new(), 0, is_external, is_self_loop));
             entry.0.insert(conn.remote_port);
             entry.1 += 1;
         }
@@ -154,7 +182,7 @@ fn main() {
     // Convertir edge_map a Vec<GraphEdge>
     let mut edges: Vec<GraphEdge> = edge_map
         .into_iter()
-        .map(|((source, target), (ports, count, is_ext))| {
+        .map(|((source, target), (ports, count, is_ext, is_self))| {
             let mut port_vec: Vec<u16> = ports.into_iter().collect();
             port_vec.sort();
             GraphEdge {
@@ -163,6 +191,7 @@ fn main() {
                 ports: port_vec,
                 connection_count: count,
                 is_external: is_ext,
+                is_self_loop: is_self,
             }
         })
         .collect();

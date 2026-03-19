@@ -14,12 +14,15 @@
                 --grid: #0f1e30;
                 --internal: #00e5ff;
                 --external: #ff4560;
+                --selfloop: #a78bfa;
                 --edge-int: #00e5ff44;
                 --edge-ext: #ff456044;
+                --edge-self: #a78bfa66;
                 --edge-hot: #ffffff99;
                 --text: #c8d8e8;
                 --accent: #00e5ff;
                 --danger: #ff4560;
+                --loop: #a78bfa;
                 --dim: #3a5068;
                 --panel: #0a1522ee;
             }
@@ -41,7 +44,6 @@
                 grid-template-columns: 1fr 300px;
             }
 
-            /* ── HEADER ── */
             header {
                 grid-column: 1 / -1;
                 background: var(--bg2);
@@ -57,7 +59,6 @@
                 font-size: 18px;
                 letter-spacing: 4px;
                 color: var(--accent);
-                text-transform: uppercase;
             }
             header .logo span {
                 color: var(--text);
@@ -76,8 +77,10 @@
             header .stats .ext {
                 color: var(--danger);
             }
+            header .stats .loop {
+                color: var(--loop);
+            }
 
-            /* ── CANVAS ── */
             #canvas {
                 position: relative;
                 overflow: hidden;
@@ -87,8 +90,6 @@
                 background-size: 40px 40px;
                 background-color: var(--bg);
             }
-
-            /* vignette overlay */
             #canvas::after {
                 content: "";
                 position: absolute;
@@ -106,7 +107,7 @@
                 height: 100%;
             }
 
-            /* ── EDGES ── */
+            /* ── Edges ── */
             .link {
                 stroke-width: 1.5;
                 fill: none;
@@ -123,7 +124,33 @@
                 stroke-width: 2.5 !important;
             }
 
-            /* ── NODES ── */
+            /* ── Self-loop arc ── */
+            @keyframes loop-spin {
+                from {
+                    stroke-dashoffset: 0;
+                }
+                to {
+                    stroke-dashoffset: -80;
+                }
+            }
+            .self-loop-arc {
+                fill: none;
+                stroke: var(--edge-self);
+                stroke-width: 1.8;
+                stroke-dasharray: 6 4;
+                animation: loop-spin 2.4s linear infinite;
+                opacity: 0.8;
+            }
+            .self-loop-arc.highlighted {
+                stroke: #c4b5fd;
+                stroke-width: 2.5;
+                opacity: 1;
+            }
+            .self-loop-arc.dimmed {
+                opacity: 0.05;
+            }
+
+            /* ── Nodes ── */
             .node-group {
                 cursor: pointer;
             }
@@ -139,6 +166,12 @@
             .node-ring.external {
                 stroke: var(--external);
             }
+            .node-ring.has-loop {
+                stroke: var(--selfloop);
+                stroke-width: 2;
+                opacity: 0.65;
+                stroke-dasharray: 3 3;
+            }
 
             .node-core {
                 stroke-width: 1.5;
@@ -150,6 +183,9 @@
             .node-core.external {
                 fill: #200010;
                 stroke: var(--external);
+            }
+            .node-core.has-loop {
+                stroke: var(--selfloop) !important;
             }
 
             .node-label {
@@ -165,7 +201,6 @@
                 opacity: 0.7;
             }
 
-            /* pulse animation */
             @keyframes pulse {
                 0% {
                     r: 14;
@@ -184,7 +219,7 @@
                 animation: pulse 2s ease-in-out infinite;
             }
 
-            /* ── SIDE PANEL ── */
+            /* ── Panel ── */
             #panel {
                 background: var(--panel);
                 border-left: 1px solid #0f2a40;
@@ -192,7 +227,6 @@
                 flex-direction: column;
                 overflow: hidden;
             }
-
             #panel-header {
                 padding: 14px 16px 10px;
                 border-bottom: 1px solid #0f2a40;
@@ -203,7 +237,6 @@
                 color: var(--dim);
                 text-transform: uppercase;
             }
-
             #panel-content {
                 flex: 1;
                 overflow-y: auto;
@@ -211,12 +244,10 @@
                 scrollbar-width: thin;
                 scrollbar-color: #1a3a50 transparent;
             }
-
             .panel-empty {
                 color: var(--dim);
                 font-size: 12px;
                 line-height: 1.8;
-                padding-top: 8px;
             }
 
             .info-block {
@@ -237,6 +268,9 @@
             .info-value.danger {
                 color: var(--danger);
             }
+            .info-value.loop {
+                color: var(--loop);
+            }
             .info-value.normal {
                 color: var(--text);
             }
@@ -255,9 +289,10 @@
                 color: #7ec8e3;
                 border-color: #1a4a60;
             }
-            .tag.ext {
-                color: var(--danger);
-                border-color: #3a1020;
+            .tag.lb {
+                color: var(--loop);
+                border-color: #2a1a50;
+                background: #100820;
             }
 
             .conn-row {
@@ -277,6 +312,9 @@
             .conn-target.ext {
                 color: var(--danger);
             }
+            .conn-target.loop {
+                color: var(--loop);
+            }
             .conn-count {
                 font-size: 10px;
                 color: var(--dim);
@@ -285,7 +323,6 @@
                 border-radius: 2px;
             }
 
-            /* ── LEGEND ── */
             #legend {
                 padding: 12px 16px;
                 border-top: 1px solid #0f2a40;
@@ -315,6 +352,11 @@
                 border-color: var(--external);
                 background: #200010;
             }
+            .legend-dot.loop {
+                border-color: var(--selfloop);
+                background: #100820;
+                border-style: dashed;
+            }
             .legend-line {
                 width: 20px;
                 height: 2px;
@@ -326,14 +368,22 @@
             .legend-line.ext {
                 background: repeating-linear-gradient(
                     90deg,
-                    var(--edge-ext) 0px,
+                    var(--edge-ext) 0,
                     var(--edge-ext) 4px,
                     transparent 4px,
                     transparent 8px
                 );
             }
+            .legend-line.loop {
+                background: repeating-linear-gradient(
+                    90deg,
+                    var(--edge-self) 0,
+                    var(--edge-self) 4px,
+                    transparent 4px,
+                    transparent 8px
+                );
+            }
 
-            /* ── CONTROLS ── */
             #controls {
                 position: absolute;
                 bottom: 16px;
@@ -358,7 +408,6 @@
                 border-color: var(--accent);
             }
 
-            /* ── LOAD OVERLAY ── */
             #load-overlay {
                 position: fixed;
                 inset: 0;
@@ -408,7 +457,6 @@
         </style>
     </head>
     <body>
-        <!-- LOAD OVERLAY -->
         <div id="load-overlay">
             <div class="lo-title">NET — GRAPH</div>
             <div class="lo-sub">
@@ -421,7 +469,6 @@
             <div class="lo-hint">O arrastra el archivo aquí</div>
         </div>
 
-        <!-- MAIN UI -->
         <header>
             <div class="logo">NET<span>—</span>GRAPH</div>
             <div class="stats">
@@ -429,6 +476,7 @@
                 <div>INTERNOS <b id="stat-int">0</b></div>
                 <div>EXTERNOS <b class="ext" id="stat-ext">0</b></div>
                 <div>ARISTAS <b id="stat-edges">0</b></div>
+                <div>LOOPBACKS <b class="loop" id="stat-loops">0</b></div>
             </div>
         </header>
 
@@ -463,6 +511,10 @@
                     Host externo
                 </div>
                 <div class="legend-item">
+                    <div class="legend-dot loop"></div>
+                    Nodo con loopback
+                </div>
+                <div class="legend-item">
                     <div class="legend-line int"></div>
                     Conexión interna
                 </div>
@@ -470,46 +522,58 @@
                     <div class="legend-line ext"></div>
                     Conexión externa
                 </div>
+                <div class="legend-item">
+                    <div class="legend-line loop"></div>
+                    Auto-conexión (loopback)
+                </div>
             </div>
         </div>
 
         <script>
-            // ── State ────────────────────────────────────────────────────────────────────
             let graphData = null;
             let simulation = null;
             let showExternal = true;
-            let selectedNode = null;
 
-            // ── File Loading ─────────────────────────────────────────────────────────────
-            const overlay = document.getElementById("load-overlay");
-            const fileInput = document.getElementById("file-input");
-
-            fileInput.addEventListener("change", (e) =>
-                loadFile(e.target.files[0]),
-            );
-
+            // ── File loading ──────────────────────────────────────────────────────────────
+            document
+                .getElementById("file-input")
+                .addEventListener("change", (e) => loadFile(e.target.files[0]));
             document.addEventListener("dragover", (e) => e.preventDefault());
             document.addEventListener("drop", (e) => {
                 e.preventDefault();
-                const f = e.dataTransfer.files[0];
-                if (f) loadFile(f);
+                if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
             });
 
             function loadFile(file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
+                const r = new FileReader();
+                r.onload = (ev) => {
                     try {
                         graphData = JSON.parse(ev.target.result);
-                        overlay.style.display = "none";
+                        document.getElementById("load-overlay").style.display =
+                            "none";
                         renderGraph(graphData);
                     } catch (err) {
                         alert("Error parseando graph.json: " + err.message);
                     }
                 };
-                reader.readAsText(file);
+                r.readAsText(file);
             }
 
-            // ── Render ───────────────────────────────────────────────────────────────────
+            // ── Self-loop arc path ────────────────────────────────────────────────────────
+            // Cubic bezier that forms a teardrop loop above the node
+            function selfLoopPath(cx, cy, r) {
+                const spread = r * 1.6;
+                const height = r * 2.6;
+                const x0 = cx - r * 0.55;
+                const x1 = cx + r * 0.55;
+                const top = cy - r - height;
+                return [
+                    `M ${x0} ${cy - r}`,
+                    `C ${x0 - spread} ${top}, ${x1 + spread} ${top}, ${x1} ${cy - r}`,
+                ].join(" ");
+            }
+
+            // ── Render ────────────────────────────────────────────────────────────────────
             function renderGraph(data) {
                 const svg = d3.select("#svg");
                 svg.selectAll("*").remove();
@@ -517,7 +581,8 @@
                 const W = document.getElementById("canvas").clientWidth;
                 const H = document.getElementById("canvas").clientHeight;
 
-                // stats header
+                // Stats
+                const selfLoopEdges = data.edges.filter((e) => e.is_self_loop);
                 document.getElementById("stat-nodes").textContent =
                     data.nodes.length;
                 document.getElementById("stat-int").textContent =
@@ -526,8 +591,16 @@
                     data.nodes.filter((n) => n.is_external).length;
                 document.getElementById("stat-edges").textContent =
                     data.edges.length;
+                document.getElementById("stat-loops").textContent =
+                    selfLoopEdges.length;
 
-                // zoom
+                const loopNodeIds = new Set(
+                    selfLoopEdges.map((e) =>
+                        typeof e.source === "object" ? e.source.id : e.source,
+                    ),
+                );
+
+                // Zoom
                 const zoom = d3
                     .zoom()
                     .scaleExtent([0.1, 4])
@@ -538,7 +611,7 @@
 
                 const g = svg.append("g").attr("id", "root");
 
-                // arrow markers
+                // Arrow markers
                 const defs = svg.append("defs");
                 ["internal", "external"].forEach((type) => {
                     defs.append("marker")
@@ -557,16 +630,22 @@
                         );
                 });
 
-                // prepare nodes & links (filtered)
+                // Filter nodes and edges
                 const nodes = data.nodes.filter(
                     (n) => showExternal || !n.is_external,
                 );
                 const nodeIds = new Set(nodes.map((n) => n.id));
                 const links = data.edges.filter(
-                    (e) => nodeIds.has(e.source) && nodeIds.has(e.target),
+                    (e) =>
+                        !e.is_self_loop &&
+                        nodeIds.has(e.source) &&
+                        nodeIds.has(e.target),
+                );
+                const selfLoops = data.edges.filter(
+                    (e) => e.is_self_loop && nodeIds.has(e.source),
                 );
 
-                // link elements
+                // ── Regular edges ──────────────────────────────────────────────────────────
                 const link = g
                     .append("g")
                     .attr("class", "links")
@@ -584,7 +663,16 @@
                             `url(#arrow-${d.is_external ? "external" : "internal"})`,
                     );
 
-                // node groups
+                // ── Self-loop arcs (rendered BELOW nodes) ─────────────────────────────────
+                const loopGroup = g.append("g").attr("class", "loops");
+                const loopArc = loopGroup
+                    .selectAll("path")
+                    .data(selfLoops)
+                    .join("path")
+                    .attr("class", "self-loop-arc")
+                    .attr("d", selfLoopPath(W / 2, H / 2, 13));
+
+                // ── Node groups ────────────────────────────────────────────────────────────
                 const node = g
                     .append("g")
                     .attr("class", "nodes")
@@ -601,28 +689,27 @@
                     )
                     .on("click", (event, d) => {
                         event.stopPropagation();
-                        selectNode(d, links, nodes);
+                        selectNode(d, links, selfLoops, nodes, loopNodeIds);
                     });
 
-                // pulse ring
+                // Outer ring — dashed purple if node has loopback
                 node.append("circle")
-                    .attr(
-                        "class",
-                        (d) =>
-                            `node-ring ${d.is_external ? "external" : "internal"} ${d.is_external ? "" : "pulsing"}`,
-                    )
+                    .attr("class", (d) => {
+                        if (loopNodeIds.has(d.id)) return "node-ring has-loop";
+                        return `node-ring ${d.is_external ? "external" : "internal pulsing"}`;
+                    })
                     .attr("r", 14);
 
-                // core circle
+                // Core circle
                 node.append("circle")
                     .attr(
                         "class",
                         (d) =>
-                            `node-core ${d.is_external ? "external" : "internal"}`,
+                            `node-core ${d.is_external ? "external" : "internal"} ${loopNodeIds.has(d.id) ? "has-loop" : ""}`,
                     )
                     .attr("r", (d) => (d.is_external ? 6 : 10));
 
-                // label (below node)
+                // Label
                 node.append("text")
                     .attr(
                         "class",
@@ -631,14 +718,12 @@
                     .attr("dy", (d) => (d.is_external ? 18 : 24))
                     .text((d) => (d.is_external ? d.id : d.hostname));
 
-                // deselect on canvas click
                 svg.on("click", () => {
-                    selectedNode = null;
-                    highlightAll(link, node);
+                    highlightAll(link, loopArc, node);
                     showPanelEmpty();
                 });
 
-                // ── Simulation ────────────────────────────────────────────────────────────
+                // ── Simulation ─────────────────────────────────────────────────────────────
                 simulation = d3
                     .forceSimulation(nodes)
                     .force(
@@ -657,18 +742,33 @@
                             .attr("y1", (d) => d.source.y)
                             .attr("x2", (d) => d.target.x)
                             .attr("y2", (d) => d.target.y);
+
                         node.attr(
                             "transform",
                             (d) => `translate(${d.x},${d.y})`,
                         );
+
+                        // Move self-loop arcs with their node
+                        const nodeMap = Object.fromEntries(
+                            nodes.map((n) => [n.id, n]),
+                        );
+                        loopArc.attr("d", (d) => {
+                            const sid =
+                                typeof d.source === "object"
+                                    ? d.source.id
+                                    : d.source;
+                            const n = nodeMap[sid];
+                            return n ? selfLoopPath(n.x, n.y, 13) : "";
+                        });
                     });
 
                 window._simulation = simulation;
                 window._link = link;
+                window._loopArc = loopArc;
                 window._node = node;
             }
 
-            // ── Drag ─────────────────────────────────────────────────────────────────────
+            // ── Drag ──────────────────────────────────────────────────────────────────────
             function dragStart(event, d) {
                 if (!event.active)
                     window._simulation.alphaTarget(0.3).restart();
@@ -685,47 +785,51 @@
                 d.fy = null;
             }
 
-            // ── Selection & Highlight ────────────────────────────────────────────────────
-            function selectNode(d, links, nodes) {
-                selectedNode = d;
+            // ── Selection ─────────────────────────────────────────────────────────────────
+            function getId(x) {
+                return typeof x === "object" ? x.id : x;
+            }
 
-                const connectedIds = new Set();
+            function selectNode(d, links, selfLoops, nodes, loopNodeIds) {
+                const connected = new Set([d.id]);
                 links.forEach((l) => {
-                    const src =
-                        typeof l.source === "object" ? l.source.id : l.source;
-                    const tgt =
-                        typeof l.target === "object" ? l.target.id : l.target;
-                    if (src === d.id || tgt === d.id) {
-                        connectedIds.add(src);
-                        connectedIds.add(tgt);
+                    if (getId(l.source) === d.id || getId(l.target) === d.id) {
+                        connected.add(getId(l.source));
+                        connected.add(getId(l.target));
                     }
                 });
 
-                window._link.classed("highlighted", (l) => {
-                    const src =
-                        typeof l.source === "object" ? l.source.id : l.source;
-                    const tgt =
-                        typeof l.target === "object" ? l.target.id : l.target;
-                    return src === d.id || tgt === d.id;
-                });
+                window._link
+                    .classed(
+                        "highlighted",
+                        (l) =>
+                            getId(l.source) === d.id ||
+                            getId(l.target) === d.id,
+                    )
+                    .style("opacity", (l) =>
+                        getId(l.source) === d.id || getId(l.target) === d.id
+                            ? 1
+                            : 0.06,
+                    );
 
-                window._link.style("opacity", (l) => {
-                    const src =
-                        typeof l.source === "object" ? l.source.id : l.source;
-                    const tgt =
-                        typeof l.target === "object" ? l.target.id : l.target;
-                    return src === d.id || tgt === d.id ? 1 : 0.08;
-                });
+                window._loopArc
+                    .classed("highlighted", (l) => getId(l.source) === d.id)
+                    .classed("dimmed", (l) => getId(l.source) !== d.id)
+                    .style("opacity", null); // let CSS classes handle opacity
 
                 window._node.style("opacity", (n) =>
-                    connectedIds.has(n.id) || n.id === d.id ? 1 : 0.15,
+                    connected.has(n.id) ? 1 : 0.12,
                 );
 
-                renderPanel(d, links, nodes);
+                renderPanel(d, links, selfLoops, nodes, loopNodeIds);
             }
 
-            function highlightAll(link, node) {
+            function highlightAll(link, loopArc, node) {
                 link.classed("highlighted", false).style("opacity", 1);
+                loopArc
+                    .classed("highlighted", false)
+                    .classed("dimmed", false)
+                    .style("opacity", null);
                 node.style("opacity", 1);
             }
 
@@ -735,84 +839,75 @@
                     `<div class="panel-empty">Haz click en un nodo<br>para ver sus detalles<br>y conexiones.</div>`;
             }
 
-            function renderPanel(d, links, nodes) {
-                const nodeMap = Object.fromEntries(nodes.map((n) => [n.id, n]));
-
-                // conexiones salientes desde este nodo
-                const outgoing = links.filter((l) => {
-                    const src =
-                        typeof l.source === "object" ? l.source.id : l.source;
-                    return src === d.id;
-                });
-
-                // conexiones entrantes
-                const incoming = links.filter((l) => {
-                    const tgt =
-                        typeof l.target === "object" ? l.target.id : l.target;
-                    return tgt === d.id;
-                });
-
+            function renderPanel(d, links, selfLoops, nodes, loopNodeIds) {
+                const outgoing = links.filter((l) => getId(l.source) === d.id);
+                const incoming = links.filter((l) => getId(l.target) === d.id);
+                const myLoops = selfLoops.filter(
+                    (l) => getId(l.source) === d.id,
+                );
                 const allPorts = [
                     ...new Set(outgoing.flatMap((l) => l.ports)),
                 ].sort((a, b) => a - b);
+                const loopPorts = [
+                    ...new Set(myLoops.flatMap((l) => l.ports)),
+                ].sort((a, b) => a - b);
+                const loopCount = myLoops.reduce(
+                    (acc, l) => acc + l.connection_count,
+                    0,
+                );
 
                 let html = "";
 
-                // tipo
                 html += `<div class="info-block">
     <div class="info-label">TIPO</div>
-    <div class="info-value ${d.is_external ? "danger" : ""}">${d.is_external ? "⚠ EXTERNO" : "✓ INTERNO"}</div>
-  </div>`;
+    <div class="info-value ${d.is_external ? "danger" : loopNodeIds.has(d.id) ? "loop" : ""}">
+      ${d.is_external ? "⚠ EXTERNO" : loopNodeIds.has(d.id) ? "↺ INTERNO + LOOPBACK" : "✓ INTERNO"}
+    </div></div>`;
 
-                // hostname
                 html += `<div class="info-block">
     <div class="info-label">HOSTNAME</div>
-    <div class="info-value normal">${d.hostname}</div>
-  </div>`;
+    <div class="info-value normal">${d.hostname}</div></div>`;
 
-                // IPs
                 if (d.ips && d.ips.length > 0) {
                     html += `<div class="info-block">
       <div class="info-label">IPs (${d.ips.length})</div>
-      <div>${d.ips.map((ip) => `<span class="tag">${ip}</span>`).join("")}</div>
-    </div>`;
+      <div>${d.ips.map((ip) => `<span class="tag">${ip}</span>`).join("")}</div></div>`;
                 }
 
-                // puertos usados (salientes)
+                if (d.loopbacks && d.loopbacks.length > 0) {
+                    html += `<div class="info-block">
+      <div class="info-label">LOOPBACKS</div>
+      <div>${d.loopbacks.map((ip) => `<span class="tag lb">↺ ${ip}</span>`).join("")}</div></div>`;
+                }
+
+                if (loopPorts.length > 0) {
+                    html += `<div class="info-block">
+      <div class="info-label">PUERTOS LOOPBACK · ${loopCount} CONEX.</div>
+      <div>${loopPorts.map((p) => `<span class="tag lb">${p}</span>`).join("")}</div></div>`;
+                }
+
                 if (allPorts.length > 0) {
                     html += `<div class="info-block">
-      <div class="info-label">PUERTOS USADOS</div>
-      <div>${allPorts.map((p) => `<span class="tag port">${p}</span>`).join("")}</div>
-    </div>`;
+      <div class="info-label">PUERTOS SALIDA</div>
+      <div>${allPorts.map((p) => `<span class="tag port">${p}</span>`).join("")}</div></div>`;
                 }
 
-                // conexiones salientes
                 if (outgoing.length > 0) {
-                    html += `<div class="info-block">
-      <div class="info-label">CONECTA CON (${outgoing.length})</div>`;
+                    html += `<div class="info-block"><div class="info-label">CONECTA CON (${outgoing.length})</div>`;
                     outgoing.forEach((l) => {
-                        const tgt =
-                            typeof l.target === "object"
-                                ? l.target.id
-                                : l.target;
-                        const isExt = l.is_external;
+                        const tgt = getId(l.target);
                         html += `<div class="conn-row">
-        <span class="conn-target ${isExt ? "ext" : ""}">${isExt ? "⚠ " : ""}${tgt}</span>
+        <span class="conn-target ${l.is_external ? "ext" : ""}">${l.is_external ? "⚠ " : ""}${tgt}</span>
         <span class="conn-count">${l.connection_count}x · ${l.ports.slice(0, 3).join(",")}${l.ports.length > 3 ? "…" : ""}</span>
       </div>`;
                     });
                     html += `</div>`;
                 }
 
-                // conexiones entrantes
                 if (incoming.length > 0) {
-                    html += `<div class="info-block">
-      <div class="info-label">RECIBE DE (${incoming.length})</div>`;
+                    html += `<div class="info-block"><div class="info-label">RECIBE DE (${incoming.length})</div>`;
                     incoming.forEach((l) => {
-                        const src =
-                            typeof l.source === "object"
-                                ? l.source.id
-                                : l.source;
+                        const src = getId(l.source);
                         html += `<div class="conn-row">
         <span class="conn-target">${src}</span>
         <span class="conn-count">${l.connection_count}x</span>
@@ -824,23 +919,19 @@
                 document.getElementById("panel-content").innerHTML = html;
             }
 
-            // ── Controls ─────────────────────────────────────────────────────────────────
+            // ── Controls ──────────────────────────────────────────────────────────────────
             function resetZoom() {
                 window._svg
                     .transition()
                     .duration(400)
                     .call(window._zoom.transform, d3.zoomIdentity);
             }
-
             function toggleExternal() {
                 showExternal = !showExternal;
                 if (graphData) renderGraph(graphData);
             }
-
             function reheat() {
-                if (window._simulation) {
-                    window._simulation.alpha(0.8).restart();
-                }
+                if (window._simulation) window._simulation.alpha(0.8).restart();
             }
         </script>
     </body>
