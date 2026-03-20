@@ -1,10 +1,10 @@
 [package]
-name = "net-graph-viz"
+name = "net-graph-builder"
 version = "0.1.0"
 edition = "2024"
 
 [[bin]]
-name = "graph-builder"
+name = "net-graph-builder"
 path = "src/main.rs"
 
 [dependencies]
