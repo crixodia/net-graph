@@ -98,9 +98,35 @@ fn is_loopback_ip(ip: &str) -> bool {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
+fn print_help(prog: &str) {
+    println!("Uso: {} [opciones] [carpeta]", prog);
+    println!();
+    println!("Argumentos:");
+    println!("  carpeta              Carpeta con los JSON recolectados (default: .)");
+    println!();
+    println!("Opciones:");
+    println!("  --trim-external      Elimina nodos externos con una sola arista");
+    println!("  --help               Muestra esta ayuda");
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    let folder = if args.len() > 1 { &args[1] } else { "." };
+    let prog = &args[0];
+
+    if args.iter().any(|a| a == "--help") {
+        print_help(prog);
+        std::process::exit(0);
+    }
+
+    let trim_external = args.iter().any(|a| a == "--trim-external");
+
+    // El folder es el primer argumento que no empieza con --
+    let folder = args
+        .iter()
+        .skip(1)
+        .find(|a| !a.starts_with("--"))
+        .map(|s| s.as_str())
+        .unwrap_or(".");
 
     println!("Leyendo JSONs desde: {}", folder);
 
@@ -272,7 +298,49 @@ fn main() {
 
     edges.sort_by(|a, b| a.source.cmp(&b.source).then(a.target.cmp(&b.target)));
 
-    // ── 6. Serializar ─────────────────────────────────────────────────────────
+    // ── 6. Trim externos con una sola arista (opcional) ───────────────────────
+    let (nodes, edges) = if trim_external {
+        // Contar cuántas aristas tiene cada nodo externo como target.
+        // Usamos String como clave para no tener referencias a `edges` vivo
+        // cuando luego consumimos el Vec con into_iter().
+        let mut ext_edge_count: HashMap<String, usize> = HashMap::new();
+        for e in &edges {
+            if e.is_external {
+                *ext_edge_count.entry(e.target.clone()).or_insert(0) += 1;
+            }
+        }
+
+        // Nodos externos a eliminar: los que aparecen en menos de 2 aristas
+        let remove: HashSet<String> = ext_edge_count
+            .into_iter()
+            .filter(|(_, count)| *count < 2)
+            .map(|(id, _)| id)
+            .collect();
+
+        let trimmed_edges: Vec<GraphEdge> = edges
+            .into_iter()
+            .filter(|e| !e.is_external || !remove.contains(&e.target))
+            .collect();
+
+        let trimmed_nodes: Vec<GraphNode> = nodes
+            .into_iter()
+            .filter(|n| !n.is_external || !remove.contains(&n.id))
+            .collect();
+
+        let removed_count = remove.len();
+        if removed_count > 0 {
+            println!(
+                "  -- trim-external: {} nodos externos eliminados (1 sola arista)",
+                removed_count
+            );
+        }
+
+        (trimmed_nodes, trimmed_edges)
+    } else {
+        (nodes, edges)
+    };
+
+    // ── 7. Serializar ─────────────────────────────────────────────────────────
     let graph = Graph { nodes, edges };
     let json = serde_json::to_string_pretty(&graph).unwrap();
 
