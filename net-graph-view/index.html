@@ -25,6 +25,7 @@
                 --loop: #a78bfa;
                 --dim: #3a5068;
                 --panel: #0a1522ee;
+                --ignore: #f59e0b;
             }
 
             * {
@@ -79,6 +80,9 @@
             }
             header .stats .loop {
                 color: var(--loop);
+            }
+            header .stats .ign {
+                color: var(--ignore);
             }
 
             #canvas {
@@ -227,23 +231,85 @@
                 flex-direction: column;
                 overflow: hidden;
             }
-            #panel-header {
-                padding: 14px 16px 10px;
+
+            /* Panel tabs */
+            #panel-tabs {
+                display: flex;
                 border-bottom: 1px solid #0f2a40;
+            }
+            .panel-tab {
+                flex: 1;
+                padding: 12px 8px;
                 font-family: "Rajdhani", sans-serif;
                 font-weight: 700;
-                font-size: 13px;
+                font-size: 12px;
                 letter-spacing: 2px;
                 color: var(--dim);
                 text-transform: uppercase;
+                text-align: center;
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+                transition: all 0.15s;
+                user-select: none;
             }
-            #panel-content {
+            .panel-tab:hover {
+                color: var(--text);
+            }
+            .panel-tab.active {
+                color: var(--accent);
+                border-bottom-color: var(--accent);
+            }
+            .panel-tab.ignored-tab.active {
+                color: var(--ignore);
+                border-bottom-color: var(--ignore);
+            }
+            .panel-tab.orphan-tab.active {
+                color: var(--danger);
+                border-bottom-color: var(--danger);
+            }
+
+            .orphan-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 7px 0;
+                border-bottom: 1px solid #0f2a40;
+                font-size: 12px;
+            }
+            .orphan-row:last-child {
+                border-bottom: none;
+            }
+            .orphan-label {
+                flex: 1;
+                word-break: break-all;
+                color: var(--danger);
+                cursor: pointer;
+                opacity: 0.8;
+                transition: opacity 0.15s;
+            }
+            .orphan-label:hover {
+                opacity: 1;
+                text-decoration: underline;
+            }
+            .orphan-type {
+                font-size: 10px;
+                color: var(--dim);
+                margin-left: 6px;
+                flex-shrink: 0;
+            }
+
+            .panel-page {
+                display: none;
                 flex: 1;
                 overflow-y: auto;
                 padding: 14px 16px;
                 scrollbar-width: thin;
                 scrollbar-color: #1a3a50 transparent;
             }
+            .panel-page.active {
+                display: block;
+            }
+
             .panel-empty {
                 color: var(--dim);
                 font-size: 12px;
@@ -259,6 +325,30 @@
                 letter-spacing: 1px;
                 text-transform: uppercase;
                 margin-bottom: 4px;
+            }
+
+            .collapsible-label {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                cursor: pointer;
+                user-select: none;
+            }
+            .collapsible-label:hover .collapse-toggle {
+                color: var(--text);
+            }
+            .collapse-toggle {
+                font-size: 10px;
+                color: var(--dim);
+                letter-spacing: 0;
+                transition: color 0.15s;
+                flex-shrink: 0;
+            }
+            .collapsible-body {
+                overflow: hidden;
+            }
+            .collapsible-body.collapsed {
+                display: none;
             }
             .info-value {
                 font-size: 13px;
@@ -312,15 +402,72 @@
             .conn-target.ext {
                 color: var(--danger);
             }
-            .conn-target.loop {
-                color: var(--loop);
-            }
             .conn-count {
                 font-size: 10px;
                 color: var(--dim);
                 background: #0d2035;
                 padding: 1px 6px;
                 border-radius: 2px;
+            }
+
+            /* Ignore button inside panel */
+            .ignore-btn {
+                width: 100%;
+                margin-top: 4px;
+                padding: 7px 0;
+                background: #1a0e00;
+                border: 1px solid var(--ignore);
+                color: var(--ignore);
+                font-family: "Share Tech Mono", monospace;
+                font-size: 11px;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .ignore-btn:hover {
+                background: #2a1800;
+            }
+
+            /* Ignored nodes list */
+            .ignored-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 7px 0;
+                border-bottom: 1px solid #0f2a40;
+                font-size: 12px;
+                color: var(--text);
+            }
+            .ignored-row:last-child {
+                border-bottom: none;
+            }
+            .ignored-row .ign-name {
+                flex: 1;
+                word-break: break-all;
+                opacity: 0.7;
+            }
+            .restore-btn {
+                background: #001a0e;
+                border: 1px solid #00e5ff44;
+                color: var(--accent);
+                font-family: "Share Tech Mono", monospace;
+                font-size: 10px;
+                padding: 2px 8px;
+                cursor: pointer;
+                letter-spacing: 1px;
+                transition: all 0.15s;
+                flex-shrink: 0;
+                margin-left: 8px;
+            }
+            .restore-btn:hover {
+                border-color: var(--accent);
+                background: #002a18;
+            }
+
+            .ignored-empty {
+                color: var(--dim);
+                font-size: 12px;
+                line-height: 1.8;
             }
 
             #legend {
@@ -407,6 +554,20 @@
                 color: var(--accent);
                 border-color: var(--accent);
             }
+            .ctrl-btn.save-btn {
+                color: var(--ignore);
+                border-color: #3a2800;
+            }
+            .ctrl-btn.save-btn:hover {
+                color: var(--ignore);
+                border-color: var(--ignore);
+                background: #1a0e00;
+            }
+            .ctrl-btn.active {
+                color: var(--accent);
+                border-color: var(--accent);
+                background: #001f2e;
+            }
 
             #load-overlay {
                 position: fixed;
@@ -454,6 +615,142 @@
                 font-size: 11px;
                 color: var(--dim);
             }
+
+            /* ── Search bar ── */
+            #search-wrap {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 0;
+                margin: 0 16px;
+            }
+            #search-input {
+                background: #0d1e30;
+                border: 1px solid #1a3a50;
+                border-right: none;
+                color: var(--text);
+                font-family: "Share Tech Mono", monospace;
+                font-size: 11px;
+                padding: 5px 10px;
+                width: 200px;
+                outline: none;
+                letter-spacing: 1px;
+                transition:
+                    border-color 0.2s,
+                    width 0.2s;
+            }
+            #search-input:focus {
+                border-color: var(--accent);
+                width: 260px;
+            }
+            #search-input::placeholder {
+                color: var(--dim);
+            }
+            #search-clear {
+                background: #0d1e30;
+                border: 1px solid #1a3a50;
+                border-left: none;
+                color: var(--dim);
+                font-family: "Share Tech Mono", monospace;
+                font-size: 11px;
+                padding: 5px 8px;
+                cursor: pointer;
+                transition: color 0.15s;
+            }
+            #search-clear:hover {
+                color: var(--danger);
+            }
+            #search-dropdown {
+                position: absolute;
+                top: calc(100% + 4px);
+                left: 0;
+                background: #0d1420;
+                border: 1px solid #1a3a50;
+                min-width: 260px;
+                max-height: 220px;
+                overflow-y: auto;
+                z-index: 200;
+                display: none;
+                scrollbar-width: thin;
+                scrollbar-color: #1a3a50 transparent;
+            }
+            #search-dropdown.open {
+                display: block;
+            }
+            .search-item {
+                padding: 7px 12px;
+                font-size: 11px;
+                cursor: pointer;
+                color: var(--text);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #0f2a40;
+                transition: background 0.1s;
+            }
+            .search-item:last-child {
+                border-bottom: none;
+            }
+            .search-item:hover {
+                background: #112030;
+            }
+            .search-item .si-type {
+                font-size: 10px;
+                color: var(--dim);
+            }
+            .search-item.already-pinned {
+                color: var(--dim);
+            }
+            .search-item.already-pinned .si-name::after {
+                content: " ✓";
+                color: var(--accent);
+            }
+
+            /* ── Pinned chips ── */
+            #pinned-wrap {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                max-width: 420px;
+                scrollbar-width: none;
+            }
+            #pinned-wrap::-webkit-scrollbar {
+                display: none;
+            }
+            .pin-chip {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                background: #001f2e;
+                border: 1px solid var(--accent);
+                color: var(--accent);
+                font-size: 10px;
+                padding: 2px 6px 2px 8px;
+                border-radius: 2px;
+                white-space: nowrap;
+                cursor: default;
+            }
+            .pin-chip.ext {
+                border-color: var(--danger);
+                color: var(--danger);
+                background: #200010;
+            }
+            .pin-chip-remove {
+                background: none;
+                border: none;
+                color: inherit;
+                font-size: 12px;
+                cursor: pointer;
+                padding: 0 0 0 2px;
+                line-height: 1;
+                opacity: 0.6;
+                transition: opacity 0.15s;
+            }
+            .pin-chip-remove:hover {
+                opacity: 1;
+            }
         </style>
     </head>
     <body>
@@ -471,12 +768,30 @@
 
         <header>
             <div class="logo">NET<span>—</span>GRAPH</div>
+
+            <!-- Search -->
+            <div id="search-wrap">
+                <input
+                    id="search-input"
+                    type="text"
+                    placeholder="BUSCAR NODO..."
+                    autocomplete="off"
+                />
+                <button id="search-clear" title="Limpiar búsqueda">✕</button>
+                <div id="search-dropdown"></div>
+            </div>
+
+            <!-- Pinned chips -->
+            <div id="pinned-wrap"></div>
+
             <div class="stats">
                 <div>NODOS <b id="stat-nodes">0</b></div>
                 <div>INTERNOS <b id="stat-int">0</b></div>
                 <div>EXTERNOS <b class="ext" id="stat-ext">0</b></div>
                 <div>ARISTAS <b id="stat-edges">0</b></div>
                 <div>LOOPBACKS <b class="loop" id="stat-loops">0</b></div>
+                <div>IGNORADOS <b class="ign" id="stat-ignored">0</b></div>
+                <div>HUÉRFANOS <b class="ext" id="stat-orphans">0</b></div>
             </div>
         </header>
 
@@ -490,17 +805,64 @@
                 <button class="ctrl-btn" onclick="reheat()">
                     ⟳ REORGANIZAR
                 </button>
+                <button class="ctrl-btn save-btn" onclick="saveGraph()">
+                    ⬇ GUARDAR JSON
+                </button>
+                <button
+                    class="ctrl-btn"
+                    id="btn-conn-opacity"
+                    onclick="toggleConnOpacity()"
+                >
+                    ◎ PESO CONEXIONES
+                </button>
             </div>
         </div>
 
         <div id="panel">
-            <div id="panel-header">INSPECTOR</div>
-            <div id="panel-content">
+            <div id="panel-tabs">
+                <div
+                    class="panel-tab active"
+                    id="tab-inspector"
+                    onclick="switchTab('inspector')"
+                >
+                    INSPECTOR
+                </div>
+                <div
+                    class="panel-tab ignored-tab"
+                    id="tab-ignored"
+                    onclick="switchTab('ignored')"
+                >
+                    IGNORADOS <span id="ignored-badge"></span>
+                </div>
+                <div
+                    class="panel-tab orphan-tab"
+                    id="tab-orphans"
+                    onclick="switchTab('orphans')"
+                >
+                    HUÉRFANOS <span id="orphan-badge"></span>
+                </div>
+            </div>
+
+            <div class="panel-page active" id="page-inspector">
                 <div class="panel-empty">
                     Haz click en un nodo<br />para ver sus detalles<br />y
                     conexiones.
                 </div>
             </div>
+
+            <div class="panel-page" id="page-ignored">
+                <div class="ignored-empty">
+                    No hay nodos ignorados.<br />Selecciona un nodo y<br />usa
+                    el botón IGNORAR.
+                </div>
+            </div>
+
+            <div class="panel-page" id="page-orphans">
+                <div class="ignored-empty">
+                    No hay nodos huérfanos<br />en la vista actual.
+                </div>
+            </div>
+
             <div id="legend">
                 <div class="legend-item">
                     <div class="legend-dot int"></div>
@@ -533,6 +895,225 @@
             let graphData = null;
             let simulation = null;
             let showExternal = true;
+            let ignoredIds = new Set(); // IDs de nodos ignorados
+            let selectedNode = null; // nodo actualmente seleccionado
+            let pinnedIds = new Set(); // IDs buscados/pinneados para multi-highlight
+            let connOpacityMode = false; // opacidad proporcional al número de conexiones
+
+            // ── Search ────────────────────────────────────────────────────────────────────
+            const searchInput = document.getElementById("search-input");
+            const searchDropdown = document.getElementById("search-dropdown");
+            const searchClear = document.getElementById("search-clear");
+            const pinnedWrap = document.getElementById("pinned-wrap");
+
+            searchInput.addEventListener("input", () => {
+                const q = searchInput.value.trim().toLowerCase();
+                if (!q || !graphData) {
+                    searchDropdown.classList.remove("open");
+                    return;
+                }
+
+                const matches = graphData.nodes
+                    .filter(
+                        (n) =>
+                            !ignoredIds.has(n.id) &&
+                            (showExternal || !n.is_external),
+                    )
+                    .filter((n) =>
+                        (n.hostname || n.id).toLowerCase().includes(q),
+                    )
+                    .slice(0, 20);
+
+                if (!matches.length) {
+                    searchDropdown.classList.remove("open");
+                    return;
+                }
+
+                searchDropdown.innerHTML = "";
+                matches.forEach((n) => {
+                    const div = document.createElement("div");
+                    const isPinned = pinnedIds.has(n.id);
+                    div.className =
+                        "search-item" + (isPinned ? " already-pinned" : "");
+                    div.innerHTML = `<span class="si-name">${(n.hostname || n.id).replace(/</g, "&lt;")}</span>
+                     <span class="si-type">${n.is_external ? "EXT" : "INT"}</span>`;
+                    div.addEventListener("click", () => {
+                        pinNode(n.id);
+                        searchInput.value = "";
+                        searchDropdown.classList.remove("open");
+                    });
+                    searchDropdown.appendChild(div);
+                });
+                searchDropdown.classList.add("open");
+            });
+
+            searchInput.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") {
+                    searchDropdown.classList.remove("open");
+                    searchInput.blur();
+                }
+                if (e.key === "Enter") {
+                    const first = searchDropdown.querySelector(
+                        ".search-item:not(.already-pinned)",
+                    );
+                    if (first) first.click();
+                }
+            });
+
+            searchClear.addEventListener("click", () => {
+                searchInput.value = "";
+                searchDropdown.classList.remove("open");
+                pinnedIds.clear();
+                renderPinnedChips();
+                applyPinnedHighlight();
+            });
+
+            document.addEventListener("click", (e) => {
+                if (
+                    !document.getElementById("search-wrap").contains(e.target)
+                ) {
+                    searchDropdown.classList.remove("open");
+                }
+            });
+
+            function pinNode(id) {
+                if (pinnedIds.has(id)) return;
+                pinnedIds.add(id);
+                renderPinnedChips();
+                applyPinnedHighlight();
+                // Center viewport on the newly pinned node
+                centerOnNode(id);
+            }
+
+            function unpinNode(id) {
+                pinnedIds.delete(id);
+                renderPinnedChips();
+                applyPinnedHighlight();
+            }
+
+            function renderPinnedChips() {
+                pinnedWrap.innerHTML = "";
+                if (!graphData) return;
+                const nodeMap = Object.fromEntries(
+                    graphData.nodes.map((n) => [n.id, n]),
+                );
+                pinnedIds.forEach((id) => {
+                    const n = nodeMap[id];
+                    if (!n) return;
+                    const label = (n.hostname || n.id).replace(/</g, "&lt;");
+                    const chip = document.createElement("div");
+                    chip.className = "pin-chip" + (n.is_external ? " ext" : "");
+                    chip.innerHTML = `<span>${label}</span>
+      <button class="pin-chip-remove" title="Quitar">✕</button>`;
+                    chip.querySelector(".pin-chip-remove").addEventListener(
+                        "click",
+                        () => unpinNode(id),
+                    );
+                    // Click on chip label centers viewport on that node
+                    chip.querySelector("span").style.cursor = "pointer";
+                    chip.querySelector("span").addEventListener("click", () =>
+                        centerOnNode(id),
+                    );
+                    pinnedWrap.appendChild(chip);
+                });
+            }
+
+            function applyPinnedHighlight() {
+                if (!window._link || !window._node || !window._loopArc) return;
+
+                if (pinnedIds.size === 0) {
+                    // No pins — restore full visibility but keep single-node selection if active
+                    if (selectedNode) {
+                        selectNode(
+                            selectedNode,
+                            window._link.data(),
+                            window._loopArc.data(),
+                            window._node.data(),
+                            new Set(window._loopArc.data().map((l) => l._src)),
+                        );
+                    } else {
+                        highlightAll(
+                            window._link,
+                            window._loopArc,
+                            window._node,
+                        );
+                    }
+                    return;
+                }
+
+                // Build set of all nodes connected to ANY pinned node
+                // (pinned nodes themselves + their direct neighbours)
+                const links = window._link.data();
+                const selfLoops = window._loopArc.data();
+
+                const relevantNodes = new Set(pinnedIds);
+                links.forEach((l) => {
+                    if (pinnedIds.has(l._src)) relevantNodes.add(l._tgt);
+                    if (pinnedIds.has(l._tgt)) relevantNodes.add(l._src);
+                });
+
+                // An edge is highlighted only if BOTH endpoints are pinned
+                // (shows connections between selected nodes, not all their neighbours)
+                const highlightedEdges = new Set();
+                links.forEach((l, i) => {
+                    if (pinnedIds.has(l._src) && pinnedIds.has(l._tgt))
+                        highlightedEdges.add(i);
+                });
+
+                window._link
+                    .classed("highlighted", (l, i) => highlightedEdges.has(i))
+                    .style("opacity", (l, i) => {
+                        if (highlightedEdges.has(i)) return 1;
+                        if (pinnedIds.has(l._src) || pinnedIds.has(l._tgt))
+                            return 0.4;
+                        return 0.08;
+                    });
+
+                window._loopArc
+                    .classed("highlighted", (l) => pinnedIds.has(l._src))
+                    .classed("dimmed", (l) => !pinnedIds.has(l._src))
+                    .style("opacity", null);
+
+                window._node.style("opacity", (n) => {
+                    if (pinnedIds.has(n.id)) return 1;
+                    if (relevantNodes.has(n.id)) return 0.55;
+                    return 0.15;
+                });
+
+                // If conn-weight mode is active, combine both opacities
+                if (connOpacityMode) applyConnOpacity();
+            }
+
+            function centerOnNode(id) {
+                if (!window._node) return;
+                let datum = null;
+                window._node.each(function (d) {
+                    if (d.id === id) datum = d;
+                });
+                if (!datum) return;
+                const W = document.getElementById("canvas").clientWidth;
+                const H = document.getElementById("canvas").clientHeight;
+                const t = d3.zoomIdentity.translate(
+                    W / 2 - datum.x,
+                    H / 2 - datum.y,
+                );
+                window._svg
+                    .transition()
+                    .duration(400)
+                    .call(window._zoom.transform, t);
+            }
+
+            // ── Tab switching ─────────────────────────────────────────────────────────────
+            function switchTab(tab) {
+                document
+                    .querySelectorAll(".panel-tab")
+                    .forEach((t) => t.classList.remove("active"));
+                document
+                    .querySelectorAll(".panel-page")
+                    .forEach((p) => p.classList.remove("active"));
+                document.getElementById(`tab-${tab}`).classList.add("active");
+                document.getElementById(`page-${tab}`).classList.add("active");
+            }
 
             // ── File loading ──────────────────────────────────────────────────────────────
             document
@@ -549,9 +1130,14 @@
                 r.onload = (ev) => {
                     try {
                         graphData = JSON.parse(ev.target.result);
+                        ignoredIds.clear();
+                        pinnedIds.clear();
+                        selectedNode = null;
                         document.getElementById("load-overlay").style.display =
                             "none";
                         renderGraph(graphData);
+                        renderIgnoredList();
+                        renderPinnedChips();
                     } catch (err) {
                         alert("Error parseando graph.json: " + err.message);
                     }
@@ -560,7 +1146,6 @@
             }
 
             // ── Self-loop arc path ────────────────────────────────────────────────────────
-            // Cubic bezier that forms a teardrop loop above the node
             function selfLoopPath(cx, cy, r) {
                 const spread = r * 1.6;
                 const height = r * 2.6;
@@ -583,16 +1168,21 @@
 
                 // Stats
                 const selfLoopEdges = data.edges.filter((e) => e.is_self_loop);
+                const visibleNodes = data.nodes.filter(
+                    (n) => !ignoredIds.has(n.id),
+                );
                 document.getElementById("stat-nodes").textContent =
-                    data.nodes.length;
+                    visibleNodes.length;
                 document.getElementById("stat-int").textContent =
-                    data.nodes.filter((n) => !n.is_external).length;
+                    visibleNodes.filter((n) => !n.is_external).length;
                 document.getElementById("stat-ext").textContent =
-                    data.nodes.filter((n) => n.is_external).length;
+                    visibleNodes.filter((n) => n.is_external).length;
                 document.getElementById("stat-edges").textContent =
                     data.edges.length;
                 document.getElementById("stat-loops").textContent =
                     selfLoopEdges.length;
+                document.getElementById("stat-ignored").textContent =
+                    ignoredIds.size;
 
                 const loopNodeIds = new Set(
                     selfLoopEdges.map((e) =>
@@ -630,10 +1220,7 @@
                         );
                 });
 
-                // Filter nodes and edges.
-                // IMPORTANT: graphData.edges must never be mutated — D3 replaces source/target
-                // with node object references after the first tick. We preserve the original
-                // string IDs in _src/_tgt and always filter/read from those.
+                // Preserve original IDs before D3 mutates source/target
                 if (!data._prepared) {
                     data.edges.forEach((e) => {
                         e._src = e.source;
@@ -642,8 +1229,11 @@
                     data._prepared = true;
                 }
 
+                // Filter: externos toggle + ignorados
                 const nodes = data.nodes.filter(
-                    (n) => showExternal || !n.is_external,
+                    (n) =>
+                        !ignoredIds.has(n.id) &&
+                        (showExternal || !n.is_external),
                 );
                 const nodeIds = new Set(nodes.map((n) => n.id));
 
@@ -660,7 +1250,21 @@
                     .filter((e) => e.is_self_loop && nodeIds.has(e._src))
                     .map((e) => ({ ...e, source: e._src, target: e._tgt }));
 
-                // ── Regular edges ──────────────────────────────────────────────────────────
+                // Detect orphans: nodes visible in current view with no edges (regular or self-loop)
+                const connectedIds = new Set([
+                    ...links.flatMap((e) => [e._src, e.target]),
+                    ...selfLoops.map((e) => e._src),
+                ]);
+                const orphanNodes = nodes.filter(
+                    (n) => !connectedIds.has(n.id),
+                );
+                document.getElementById("stat-orphans").textContent =
+                    orphanNodes.length;
+                // Store for the orphan panel — renderOrphanList reads window._orphanNodes
+                window._orphanNodes = orphanNodes;
+                renderOrphanList();
+
+                // Regular edges
                 const link = g
                     .append("g")
                     .attr("class", "links")
@@ -678,7 +1282,7 @@
                             `url(#arrow-${d.is_external ? "external" : "internal"})`,
                     );
 
-                // ── Self-loop arcs (rendered BELOW nodes) ─────────────────────────────────
+                // Self-loop arcs
                 const loopGroup = g.append("g").attr("class", "loops");
                 const loopArc = loopGroup
                     .selectAll("path")
@@ -687,7 +1291,7 @@
                     .attr("class", "self-loop-arc")
                     .attr("d", selfLoopPath(W / 2, H / 2, 13));
 
-                // ── Node groups ────────────────────────────────────────────────────────────
+                // Node groups
                 const node = g
                     .append("g")
                     .attr("class", "nodes")
@@ -704,10 +1308,10 @@
                     )
                     .on("click", (event, d) => {
                         event.stopPropagation();
+                        selectedNode = d;
                         selectNode(d, links, selfLoops, nodes, loopNodeIds);
                     });
 
-                // Outer ring — dashed purple if node has loopback
                 node.append("circle")
                     .attr("class", (d) => {
                         if (loopNodeIds.has(d.id)) return "node-ring has-loop";
@@ -715,7 +1319,6 @@
                     })
                     .attr("r", 14);
 
-                // Core circle
                 node.append("circle")
                     .attr(
                         "class",
@@ -724,7 +1327,6 @@
                     )
                     .attr("r", (d) => (d.is_external ? 6 : 10));
 
-                // Label
                 node.append("text")
                     .attr(
                         "class",
@@ -734,11 +1336,16 @@
                     .text((d) => (d.is_external ? d.id : d.hostname));
 
                 svg.on("click", () => {
-                    highlightAll(link, loopArc, node);
+                    selectedNode = null;
                     showPanelEmpty();
+                    if (pinnedIds.size > 0) {
+                        applyPinnedHighlight();
+                    } else {
+                        highlightAll(link, loopArc, node);
+                    }
                 });
 
-                // ── Simulation ─────────────────────────────────────────────────────────────
+                // Simulation
                 simulation = d3
                     .forceSimulation(nodes)
                     .force(
@@ -757,13 +1364,10 @@
                             .attr("y1", (d) => d.source.y)
                             .attr("x2", (d) => d.target.x)
                             .attr("y2", (d) => d.target.y);
-
                         node.attr(
                             "transform",
                             (d) => `translate(${d.x},${d.y})`,
                         );
-
-                        // Move self-loop arcs with their node (use _src — immune to D3 mutation)
                         const nodeMap = Object.fromEntries(
                             nodes.map((n) => [n.id, n]),
                         );
@@ -777,6 +1381,11 @@
                 window._link = link;
                 window._loopArc = loopArc;
                 window._node = node;
+
+                // Re-apply pinned highlight after graph is rebuilt
+                // (needed when toggling externos or restoring ignored nodes)
+                if (pinnedIds.size > 0) applyPinnedHighlight();
+                else if (connOpacityMode) applyConnOpacity();
             }
 
             // ── Drag ──────────────────────────────────────────────────────────────────────
@@ -794,6 +1403,142 @@
                 if (!event.active) window._simulation.alphaTarget(0);
                 d.fx = null;
                 d.fy = null;
+            }
+
+            // ── Ignore / Restore ──────────────────────────────────────────────────────────
+            function ignoreNode(id) {
+                ignoredIds.add(id);
+                selectedNode = null;
+                if (graphData) {
+                    renderGraph(graphData);
+                    renderIgnoredList();
+                    showPanelEmpty();
+                }
+            }
+
+            function restoreNode(id) {
+                ignoredIds.delete(id);
+                if (graphData) {
+                    renderGraph(graphData);
+                    renderIgnoredList();
+                }
+            }
+
+            function renderIgnoredList() {
+                const badge = document.getElementById("ignored-badge");
+                badge.textContent =
+                    ignoredIds.size > 0 ? `(${ignoredIds.size})` : "";
+
+                const page = document.getElementById("page-ignored");
+                if (ignoredIds.size === 0) {
+                    page.innerHTML = `<div class="ignored-empty">No hay nodos ignorados.<br>Selecciona un nodo y<br>usa el botón IGNORAR.</div>`;
+                    return;
+                }
+
+                // Build label map from graphData for display
+                const labelMap = {};
+                if (graphData) {
+                    graphData.nodes.forEach((n) => {
+                        labelMap[n.id] = n.hostname || n.id;
+                    });
+                }
+
+                let html = "";
+                ignoredIds.forEach((id) => {
+                    const label = labelMap[id] || id;
+                    const safeLabel = label
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+                    html += `<div class="ignored-row" data-ignored-id="${id.replace(/"/g, "&quot;")}">
+      <span class="ign-name">${safeLabel}</span>
+      <button class="restore-btn">RESTAURAR</button>
+    </div>`;
+                });
+                page.innerHTML = html;
+
+                page.querySelectorAll(".ignored-row").forEach((row) => {
+                    row.querySelector(".restore-btn").addEventListener(
+                        "click",
+                        () => {
+                            restoreNode(row.dataset.ignoredId);
+                        },
+                    );
+                });
+            }
+
+            // ── Orphan list ───────────────────────────────────────────────────────────────
+            function renderOrphanList() {
+                const orphans = window._orphanNodes || [];
+                const badge = document.getElementById("orphan-badge");
+                badge.textContent =
+                    orphans.length > 0 ? `(${orphans.length})` : "";
+
+                const page = document.getElementById("page-orphans");
+                if (orphans.length === 0) {
+                    page.innerHTML = `<div class="ignored-empty">No hay nodos huérfanos<br>en la vista actual.</div>`;
+                    return;
+                }
+
+                let html = "";
+                orphans.forEach((n) => {
+                    const label = n.hostname || n.id;
+                    const typeStr = n.is_external ? "EXT" : "INT";
+                    // Use a data attribute to avoid any escaping issues with special chars in IDs
+                    const safeLabel = label
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+                    html += `<div class="orphan-row" data-orphan-id="${n.id.replace(/"/g, "&quot;")}">
+      <span class="orphan-label">${safeLabel}</span>
+      <span class="orphan-type">${typeStr}</span>
+    </div>`;
+                });
+                page.innerHTML = html;
+
+                // Attach click handlers via JS — avoids all inline escaping problems
+                page.querySelectorAll(".orphan-row").forEach((row) => {
+                    row.querySelector(".orphan-label").addEventListener(
+                        "click",
+                        () => {
+                            focusNode(row.dataset.orphanId);
+                        },
+                    );
+                });
+            }
+
+            // Focus a node by ID: simulates a click on it in the graph
+            function focusNode(id) {
+                if (!window._node) return;
+
+                // Find the D3 datum that matches this id
+                let targetDatum = null;
+                window._node.each(function (d) {
+                    if (d.id === id) targetDatum = d;
+                });
+                if (!targetDatum) return;
+
+                // Center viewport on the node
+                const W = document.getElementById("canvas").clientWidth;
+                const H = document.getElementById("canvas").clientHeight;
+                const t = d3.zoomIdentity.translate(
+                    W / 2 - targetDatum.x,
+                    H / 2 - targetDatum.y,
+                );
+                window._svg
+                    .transition()
+                    .duration(450)
+                    .call(window._zoom.transform, t);
+
+                // Trigger selection as if the user clicked the node
+                selectedNode = targetDatum;
+
+                // Rebuild current links/selfLoops/nodes/loopNodeIds from live simulation data
+                const nodes = window._node.data();
+                const links = window._link ? window._link.data() : [];
+                const selfLoops = window._loopArc ? window._loopArc.data() : [];
+                const loopNodeIds = new Set(selfLoops.map((l) => l._src));
+
+                selectNode(targetDatum, links, selfLoops, nodes, loopNodeIds);
+                switchTab("inspector");
             }
 
             // ── Selection ─────────────────────────────────────────────────────────────────
@@ -825,6 +1570,7 @@
                 );
 
                 renderPanel(d, links, selfLoops, nodes, loopNodeIds);
+                switchTab("inspector");
             }
 
             function highlightAll(link, loopArc, node) {
@@ -833,12 +1579,16 @@
                     .classed("highlighted", false)
                     .classed("dimmed", false)
                     .style("opacity", null);
-                node.style("opacity", 1);
+                if (connOpacityMode) {
+                    applyConnOpacity(); // restore conn-weight instead of flat 1
+                } else {
+                    node.style("opacity", 1);
+                }
             }
 
-            // ── Panel ─────────────────────────────────────────────────────────────────────
+            // ── Panel Inspector ───────────────────────────────────────────────────────────
             function showPanelEmpty() {
-                document.getElementById("panel-content").innerHTML =
+                document.getElementById("page-inspector").innerHTML =
                     `<div class="panel-empty">Haz click en un nodo<br>para ver sus detalles<br>y conexiones.</div>`;
             }
 
@@ -889,14 +1639,24 @@
 
                 if (loopPorts.length > 0) {
                     html += `<div class="info-block">
-      <div class="info-label">PUERTOS LOOPBACK · ${loopCount} CONEX.</div>
-      <div>${loopPorts.map((p) => `<span class="tag lb">${p}</span>`).join("")}</div></div>`;
+      <div class="collapsible-label" data-target="ports-lb">
+        <span class="info-label" style="margin-bottom:0">PUERTOS LOOPBACK · ${loopCount} CONEX. (${loopPorts.length})</span>
+        <span class="collapse-toggle">▶ VER</span>
+      </div>
+      <div class="collapsible-body collapsed" id="ports-lb">
+        ${loopPorts.map((p) => `<span class="tag lb">${p}</span>`).join("")}
+      </div></div>`;
                 }
 
                 if (allPorts.length > 0) {
                     html += `<div class="info-block">
-      <div class="info-label">PUERTOS SALIDA</div>
-      <div>${allPorts.map((p) => `<span class="tag port">${p}</span>`).join("")}</div></div>`;
+      <div class="collapsible-label" data-target="ports-out">
+        <span class="info-label" style="margin-bottom:0">PUERTOS SALIDA (${allPorts.length})</span>
+        <span class="collapse-toggle">▶ VER</span>
+      </div>
+      <div class="collapsible-body collapsed" id="ports-out">
+        ${allPorts.map((p) => `<span class="tag port">${p}</span>`).join("")}
+      </div></div>`;
                 }
 
                 if (outgoing.length > 0) {
@@ -921,7 +1681,34 @@
                     html += `</div>`;
                 }
 
-                document.getElementById("panel-content").innerHTML = html;
+                // Ignore button — use data attribute set after innerHTML to avoid escaping issues
+                html += `<button class="ignore-btn" id="btn-ignore-node">⊘ IGNORAR ESTE NODO</button>`;
+
+                document.getElementById("page-inspector").innerHTML = html;
+
+                const ignBtn = document.getElementById("btn-ignore-node");
+                if (ignBtn)
+                    ignBtn.addEventListener("click", () => ignoreNode(d.id));
+
+                // Collapsible port sections
+                document
+                    .getElementById("page-inspector")
+                    .querySelectorAll(".collapsible-label")
+                    .forEach((label) => {
+                        label.addEventListener("click", () => {
+                            const body = document.getElementById(
+                                label.dataset.target,
+                            );
+                            const toggle =
+                                label.querySelector(".collapse-toggle");
+                            if (!body) return;
+                            const collapsed =
+                                body.classList.toggle("collapsed");
+                            toggle.textContent = collapsed
+                                ? "▶ VER"
+                                : "▼ OCULTAR";
+                        });
+                    });
             }
 
             // ── Controls ──────────────────────────────────────────────────────────────────
@@ -937,6 +1724,172 @@
             }
             function reheat() {
                 if (window._simulation) window._simulation.alpha(0.8).restart();
+            }
+
+            // ── Connection-weight opacity ─────────────────────────────────────────────────
+
+            // Returns a map of nodeId -> total connection count (edges in + out + self-loops)
+            function buildConnCountMap() {
+                if (!window._link || !window._node || !window._loopArc)
+                    return {};
+                const counts = {};
+                window._node.each((d) => {
+                    counts[d.id] = 0;
+                });
+
+                window._link.each((l) => {
+                    const s =
+                        l._src ||
+                        (typeof l.source === "object" ? l.source.id : l.source);
+                    const t =
+                        l._tgt ||
+                        (typeof l.target === "object" ? l.target.id : l.target);
+                    if (s in counts)
+                        counts[s] =
+                            (counts[s] || 0) + (l.connection_count || 1);
+                    if (t in counts)
+                        counts[t] =
+                            (counts[t] || 0) + (l.connection_count || 1);
+                });
+
+                window._loopArc.each((l) => {
+                    const s =
+                        l._src ||
+                        (typeof l.source === "object" ? l.source.id : l.source);
+                    if (s in counts)
+                        counts[s] =
+                            (counts[s] || 0) + (l.connection_count || 1);
+                });
+
+                return counts;
+            }
+
+            // Apply or remove connection-weight opacity on top of any existing pin state
+            function applyConnOpacity() {
+                if (!window._node) return;
+
+                if (!connOpacityMode) {
+                    // Restore: respect pin state or full visibility
+                    if (pinnedIds.size > 0) {
+                        applyPinnedHighlight();
+                    } else if (selectedNode) {
+                        const links = window._link ? window._link.data() : [];
+                        const selfLoops = window._loopArc
+                            ? window._loopArc.data()
+                            : [];
+                        const nodes = window._node.data();
+                        const loopNodeIds = new Set(
+                            selfLoops.map((l) => l._src),
+                        );
+                        selectNode(
+                            selectedNode,
+                            links,
+                            selfLoops,
+                            nodes,
+                            loopNodeIds,
+                        );
+                    } else {
+                        highlightAll(
+                            window._link,
+                            window._loopArc,
+                            window._node,
+                        );
+                    }
+                    return;
+                }
+
+                const counts = buildConnCountMap();
+                const values = Object.values(counts).filter((v) => v > 0);
+                if (!values.length) return;
+
+                const minC = Math.min(...values);
+                const maxC = Math.max(...values);
+                const range = maxC - minC || 1;
+
+                // Scale: min connections → 0.15 opacity, max → 1.0
+                // When pins are active, multiply the conn-opacity by the pin-opacity so both stack
+                const pinOpacity =
+                    pinnedIds.size > 0 ? buildPinOpacityMap() : null;
+
+                window._node.style("opacity", (d) => {
+                    const c = counts[d.id] || 0;
+                    const conn =
+                        c === 0 ? 0.1 : 0.15 + ((c - minC) / range) * 0.85;
+                    if (pinOpacity) {
+                        // Multiply: only bright if both highly connected AND pinned/relevant
+                        return Math.max(
+                            0.06,
+                            conn * (pinOpacity[d.id] ?? 0.15),
+                        );
+                    }
+                    return conn;
+                });
+            }
+
+            // Returns a map of nodeId -> pin-state opacity (used for combining modes)
+            function buildPinOpacityMap() {
+                const links = window._link ? window._link.data() : [];
+                const relevantNodes = new Set(pinnedIds);
+                links.forEach((l) => {
+                    if (pinnedIds.has(l._src)) relevantNodes.add(l._tgt);
+                    if (pinnedIds.has(l._tgt)) relevantNodes.add(l._src);
+                });
+
+                const map = {};
+                window._node.each((d) => {
+                    if (pinnedIds.has(d.id)) map[d.id] = 1.0;
+                    else if (relevantNodes.has(d.id)) map[d.id] = 0.55;
+                    else map[d.id] = 0.15;
+                });
+                return map;
+            }
+
+            function toggleConnOpacity() {
+                connOpacityMode = !connOpacityMode;
+                const btn = document.getElementById("btn-conn-opacity");
+                btn.classList.toggle("active", connOpacityMode);
+                applyConnOpacity();
+            }
+
+            // ── Save graph JSON ───────────────────────────────────────────────────────────
+            function saveGraph() {
+                if (!graphData) return;
+
+                // Aplica los mismos filtros que el render actual:
+                // 1. nodos ignorados excluidos
+                // 2. externos excluidos si showExternal === false
+                const nodes = graphData.nodes.filter(
+                    (n) =>
+                        !ignoredIds.has(n.id) &&
+                        (showExternal || !n.is_external),
+                );
+                const nodeIds = new Set(nodes.map((n) => n.id));
+
+                const edges = graphData.edges
+                    .filter((e) => {
+                        const src = e._src || e.source;
+                        const tgt = e._tgt || e.target;
+                        return nodeIds.has(src) && nodeIds.has(tgt);
+                    })
+                    .map((e) => ({
+                        source: e._src || e.source,
+                        target: e._tgt || e.target,
+                        ports: e.ports,
+                        connection_count: e.connection_count,
+                        is_external: e.is_external,
+                        is_self_loop: e.is_self_loop,
+                    }));
+
+                const output = { nodes, edges };
+                const json = JSON.stringify(output, null, 2);
+                const blob = new Blob([json], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "graph_filtered.json";
+                a.click();
+                URL.revokeObjectURL(url);
             }
         </script>
     </body>
