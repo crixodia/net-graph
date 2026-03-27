@@ -1,250 +1,186 @@
-# net-graph — Network Topology Visualizer
+# netmap
 
-Herramienta para visualizar la topología de red entre servidores. Compuesta por dos programas independientes y un visualizador web.
-
-```
-net-info/             ← recolector (corre en cada servidor)
-net-graph-builder/    ← procesador (corre en tu máquina)
-  ├── src/main.rs
-  └── Cargo.toml
-net-graph-view/       ← visualizador web
-  └── index.html
-```
+Command-line utility for capturing active TCP connections on a host and generating a network graph from the collected data. It can operate as a standalone capture agent, a graph builder, or both in sequence.
 
 ---
 
-## 1. net-info — Recolector
+## Requirements
 
-Captura las conexiones TCP activas de un servidor y las guarda en un archivo JSON. Soporta Windows y Linux desde el mismo código fuente.
+- Rust 1.70 or later
+- Linux or Windows (macOS is not supported; capture returns an empty set)
+- Root or administrator privileges may be required to read network socket tables
 
-### Compilar
+---
 
-**Windows**
-```powershell
-cargo build --release
-# binario: target\release\net-info.exe
-```
-
-**Linux / WSL**
-```bash
-# Dependencias del sistema (Fedora/RHEL)
-sudo dnf install gcc pkg-config libpcap-devel -y
-
-# Dependencias del sistema (Debian/Ubuntu)
-sudo apt install gcc pkg-config libpcap-devel -y
-
-cargo build --release
-# binario: target/release/net-info
-```
-
-### Uso
-
-```
-net-info --once
-net-info --watch [--interval N]
-```
-
-| Argumento | Descripción |
-|---|---|
-| `--once` | Captura una vez y guarda el JSON inmediatamente |
-| `--watch` | Sensa continuamente hasta que presiones Ctrl+C |
-| `--interval N` | Segundos entre cada scan en modo `--watch` (default: `2`) |
-
-### Ejemplos
+## Building
 
 ```bash
-# Captura puntual
-./net-info --once
-
-# Sensa durante el tiempo que necesites y guarda al salir
-./net-info --watch
-
-# Sensa cada 5 segundos
-./net-info --watch --interval 5
+cargo build --release
 ```
 
-### Salida
+The binary will be located at `target/release/netmap`.
 
-Genera un archivo JSON en el directorio actual con el nombre `hostname_timestamp.json`:
+---
+
+## Usage
 
 ```
-hancock_1737482910.json
-webserver_1737483200.json
+netmap <subcommand> [options]
 ```
 
-Estructura del JSON:
+### Subcommands
+
+| Subcommand | Description |
+|------------|-------------|
+| `capture`  | Capture active TCP connections on this host and write the result to a JSON file |
+| `graph`    | Read JSON files from a folder and generate `graph.json` |
+| `run`      | Perform capture and graph generation in sequence |
+
+---
+
+## Subcommand Reference
+
+### capture
+
+Captures the active TCP connections of the local host and writes a timestamped JSON file.
+
+```
+netmap capture [--once | --watch] [--interval N] [--output-dir DIR]
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--once` | yes | Single capture, saves immediately |
+| `--watch` | — | Accumulates connections across scans until Ctrl+C, then saves |
+| `--interval N` | `2` | Seconds between scans in `--watch` mode |
+| `--output-dir DIR` | `.` | Directory where the JSON file will be written |
+
+The output filename follows the pattern `<hostname>_<unix_timestamp>.json`.
+
+---
+
+### graph
+
+Reads all JSON files in a folder (excluding `graph.json` itself) and produces a `graph.json` file describing nodes and edges.
+
+```
+netmap graph [--folder DIR] [--trim-external]
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--folder DIR` | `.` | Directory containing the captured JSON files |
+| `--trim-external` | — | Remove external nodes that appear in only one edge |
+
+Multiple JSON files with the same hostname are merged into a single node. The `snapshot_count` field on each node reflects how many files were merged.
+
+---
+
+### run
+
+Executes `capture` followed immediately by `graph` on the same directory.
+
+```
+netmap run [--once | --watch] [--interval N] [--folder DIR] [--output-dir DIR] [--trim-external]
+```
+
+All options from both `capture` and `graph` are accepted. If `--output-dir` is not specified, it defaults to the value of `--folder` so that the captured file and the graph are written to the same location.
+
+---
+
+## Output Format
+
+### Capture file (`<hostname>_<timestamp>.json`)
 
 ```json
 {
   "server": {
-    "hostname": "hancock",
-    "ips": ["192.168.1.105", "10.0.0.4"],
-    "loopbacks": ["127.0.0.1", "::1"]
+    "hostname": "host-a",
+    "ips": ["192.168.1.10"],
+    "loopbacks": ["127.0.0.1"]
   },
   "connections": [
-    { "remote_ip": "192.168.1.200", "remote_port": 443 },
-    { "remote_ip": "127.0.0.1",     "remote_port": 5432 }
+    { "remote_ip": "192.168.1.20", "remote_port": 443 }
   ]
 }
 ```
 
-### Unicidad de conexiones
+### Graph file (`graph.json`)
 
-Una conexión es única por el par `(remote_ip, remote_port)`. La misma IP con distinto puerto se considera una conexión diferente. En modo `--watch`, si la misma conexión aparece en múltiples scans se registra una sola vez en el JSON final.
+```json
+{
+  "nodes": [
+    {
+      "id": "host-a",
+      "hostname": "host-a",
+      "ips": ["192.168.1.10"],
+      "loopbacks": ["127.0.0.1"],
+      "is_external": false,
+      "snapshot_count": 2
+    }
+  ],
+  "edges": [
+    {
+      "source": "host-a",
+      "target": "host-b",
+      "ports": [443, 8080],
+      "connection_count": 5,
+      "is_external": false,
+      "is_self_loop": false
+    }
+  ]
+}
+```
 
-### Captura programada (cron)
+**Node fields**
 
-Para capturar snapshots automáticos a lo largo del día en Linux:
+| Field | Description |
+|-------|-------------|
+| `id` | Unique identifier; equals `hostname` for internal nodes and the IP address for external ones |
+| `is_external` | `true` if the node was not present in any capture file |
+| `snapshot_count` | Number of JSON files merged into this node |
+
+**Edge fields**
+
+| Field | Description |
+|-------|-------------|
+| `ports` | Sorted list of unique remote ports observed on this connection |
+| `connection_count` | Total number of times this connection appeared across all snapshots |
+| `is_external` | `true` if the target node is external |
+| `is_self_loop` | `true` if source and target are the same host (includes loopback addresses) |
+
+---
+
+## Examples
+
+Single capture, current directory:
 
 ```bash
-# Editar crontab
-crontab -e
+netmap capture --once
+```
 
-# Captura cada 2 horas y guarda en /opt/snapshots/
-0 */2 * * * /opt/net-info --once && mv /opt/connections.json /opt/snapshots/
+Watch mode, save to a specific folder:
+
+```bash
+netmap capture --watch --interval 5 --output-dir /data/snapshots
+```
+
+Build graph from an existing folder, removing noise:
+
+```bash
+netmap graph --folder /data/snapshots --trim-external
+```
+
+Full pipeline in one command:
+
+```bash
+netmap run --watch --interval 3 --folder /data/snapshots --trim-external
 ```
 
 ---
 
-## 2. net-graph-builder — Procesador
+## Platform Notes
 
-Lee todos los JSON recolectados, los fusiona por servidor y genera un `graph.json` listo para visualizar.
-
-### Compilar
-
-```bash
-cargo build --release
-# binario: target/release/net-graph-builder
-```
-
-### Uso
-
-```
-net-graph-builder [carpeta]
-```
-
-| Argumento | Descripción |
-|---|---|
-| `carpeta` | Ruta a la carpeta con los JSON recolectados (default: `.`) |
-
-### Ejemplos
-
-```bash
-# Procesar JSONs en el directorio actual
-./net-graph-builder
-
-# Procesar JSONs en una carpeta específica
-./net-graph-builder /opt/snapshots/
-
-# Windows
-net-graph-builder.exe C:\datos\snapshots
-```
-
-### Fusión de snapshots
-
-Si hay múltiples archivos del mismo servidor (mismo `hostname`), el builder los fusiona automáticamente en un único nodo:
-
-- Las IPs y loopbacks se acumulan (unión de todos los archivos).
-- Las conexiones se deduplicán por `(remote_ip, remote_port)`.
-- `connection_count` en cada arista refleja cuántas veces apareció esa conexión en total entre todos los snapshots.
-
-```
-Leyendo JSONs desde: /opt/snapshots
-  + hancock (hancock_1737482910.json)
-  + hancock (hancock_1737490000.json)
-  + webserver (webserver_1737483200.json)
-
-Servidores cargados: 2 (3 archivos fusionados en 2 servidores unicos)
-  ~ hancock -> 2 snapshots fusionados
-
-graph.json generado en: /opt/snapshots/graph.json
-   3 nodos (2 internos, 1 externos)
-   5 aristas
-```
-
-### Salida
-
-Genera `graph.json` en la misma carpeta de los JSONs de entrada. Este archivo es la entrada para el visualizador.
-
----
-
-## 3. net-graph-view/index.html — Visualizador Web
-
-Abre `index.html` en cualquier navegador moderno. No requiere servidor web ni instalación adicional.
-
-### Cargar datos
-
-Al abrir la página aparece una pantalla de carga. Puedes:
-- Hacer clic en **CARGAR graph.json** y seleccionar el archivo.
-- Arrastrar el archivo `graph.json` directamente sobre la ventana.
-
-### Tipos de nodos
-
-| Visual | Significado |
-|---|---|
-| Círculo cian | Servidor interno del grupo |
-| Círculo rojo | Host externo (IP no reconocida en el grupo) |
-| Ring punteado púrpura | Servidor con auto-conexiones loopback |
-
-### Tipos de aristas
-
-| Visual | Significado |
-|---|---|
-| Línea cian sólida | Conexión entre servidores internos |
-| Línea roja punteada | Conexión a host externo |
-| Arco púrpura animado | Auto-conexión loopback |
-
-### Controles
-
-| Control | Acción |
-|---|---|
-| Scroll / pinch | Zoom |
-| Click y arrastrar (fondo) | Pan |
-| Click y arrastrar (nodo) | Mover nodo |
-| Click en nodo | Ver detalles en el panel Inspector |
-| Click en fondo | Deseleccionar |
-| **⊡ RESET** | Restaurar zoom y posición |
-| **⊘ EXTERNOS** | Mostrar / ocultar nodos externos |
-| **⟳ REORGANIZAR** | Relanzar la simulación de fuerzas |
-
-### Panel Inspector
-
-Al hacer click en un nodo muestra:
-
-- Tipo (interno / externo / con loopback)
-- Hostname e IPs asignadas
-- Direcciones loopback
-- Puertos usados en conexiones loopback
-- Puertos de salida hacia otros nodos
-- Servidores a los que se conecta (con conteo de conexiones y puertos)
-- Servidores desde los que recibe conexiones
-- Número de snapshots fusionados en ese nodo
-
----
-
-## Flujo completo de uso
-
-```
-Servidor A                    Servidor B
-│                             │
-│  ./net-info --watch         │  ./net-info --watch
-│  (captura durante X horas)  │  (captura durante X horas)
-│  Ctrl+C                     │  Ctrl+C
-│                             │
-│  hancock_1737482910.json    │  webserver_1737483200.json
-│  hancock_1737490000.json    │  (múltiples snapshots OK)
-│            │                │           │
-│            └────────────────┘           │
-│                      │                  │
-│               /opt/snapshots/ ──────────┘
-│                      │
-│                      ↓
-│   ./net-graph-builder /opt/snapshots/
-│                      │
-│                      ↓
-│                 graph.json
-│                      │
-│                      ↓
-│    Abrir net-graph-view/index.html
-│         → arrastrar graph.json a la ventana
-```
+- **Linux**: reads `/proc/net/tcp` and `/proc/net/tcp6` via `procfs`. Requires read access to those files (typically root or a process with `CAP_NET_ADMIN`).
+- **Windows**: uses `netstat2` to query the TCP socket table. Run as administrator if entries are missing.
+- **Other**: the capture step is a no-op and produces an empty connections list. Graph generation works on any platform.
